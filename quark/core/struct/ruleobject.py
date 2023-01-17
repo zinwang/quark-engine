@@ -44,7 +44,9 @@ class RuleObject:
         self._api = self._json_obj["api"]
         for index in range(len(self._api)):
             descriptor = self._api[index]["descriptor"]
-            if " " not in descriptor:
+            containsRegexChar = any(regexChar in descriptor
+                                    for regexChar in "+*?^]{}|\\")
+            if " " not in descriptor and not containsRegexChar:
                 self._api[index][
                     "descriptor"
                 ] = descriptor_to_androguard_format(descriptor)
