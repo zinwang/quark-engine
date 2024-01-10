@@ -2,6 +2,8 @@ Source: quark-engine
 Section: misc
 Priority: optional
 Maintainer: Kali Developers <devel@kali.org>
+
+Package: quark-engine
 Uploaders: Zin Wang <chriswangxxxxx@gmail.com>
 Build-Depends: debhelper-compat (= 12),
 	       dh-virtualenv (>= 0.8),
