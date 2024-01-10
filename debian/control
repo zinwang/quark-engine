@@ -6,7 +6,7 @@ Uploaders: Zin Wang <chriswangxxxxx@gmail.com>
 Build-Depends: debhelper-compat (= 12),
 	       dh-virtualenv (>= 0.8),
 	       python3,
-               androguard (=3.4.0~a1-7)
+               androguard (=3.4.0~a1-6)
 
 Standards-Version: 23.12.1
 Homepage: https://github.com/quark-engine/quark-engine
@@ -16,7 +16,7 @@ Package: quark-engine
 Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
-         androguard (=3.4.0~a1-7)
+         androguard (=3.4.0~a1-6)
 Description: Android Malware (Analysis | Scoring System)
  Quark-Engine is a full-featured Android analysis framework written in
  Python for hunting threat intelligence inside the APK, DEX files.
