@@ -3,7 +3,7 @@ Version: 23.12.1-0kali1
 Architecture: all
 Maintainer: Kali Developers <devel@kali.org>
 Installed-Size: 372086
-Depends: androguard (= 3.4.0~a1-6)
+Depends: androguard (= 3.4.0~a1-7)
 Section: misc
 Priority: optional
 Homepage: https://github.com/quark-engine/quark-engine
