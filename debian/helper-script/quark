@@ -1,2 +1,3 @@
 #!/bin/sh
+#DEBHELPER#
 exec python3 /usr/share/quark-engine/quark/cli.py "$@"
