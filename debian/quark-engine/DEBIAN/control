@@ -2,7 +2,7 @@ Package: quark-engine
 Version: 23.12.1-0kali1
 Architecture: all
 Maintainer: Kali Developers <devel@kali.org>
-Installed-Size: 372086
+Installed-Size: 372091
 Section: misc
 Priority: optional
 Homepage: https://github.com/quark-engine/quark-engine
