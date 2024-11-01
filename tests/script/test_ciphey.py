@@ -15,8 +15,7 @@ class TestCiphey(TestCase):
         with self.assertRaises(Exception) as context:
             checkClearText("Clear Text")
         assert "Ciphey is not installed." in str(context.exception)
-    
-    """
+
     def testCheckClearTextWithClearText(self):
         assert checkClearText("Clear Text") == "Clear Text"
 
@@ -25,4 +24,3 @@ class TestCiphey(TestCase):
             checkClearText("NB2HI4DTHIXS6Z3PN5TWYZJOMNXW2===")
             == "https://google.com"
         )
-    """
