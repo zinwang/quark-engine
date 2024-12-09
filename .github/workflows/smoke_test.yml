@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.10', '3.11', '3.12']
 
     steps:
@@ -42,14 +42,9 @@ jobs:
         # Install click <= 8.1.7 for CLI supports
         python -m pip install "click<=8.1.7"
    
-
-    - run: sudo apt-get install -y cmake git
-      if: matrix.os == 'ubuntu-latest'
-    - run: brew install cmake git
-      if: matrix.os == 'macos-13'
-
-    - name: Install Shuriken-Analyzer for Linux/MacOS
+    - name: Install Shuriken-Analyzer for Linux
       run: |
+        sudo apt-get install -y cmake git
         sudo git clone https://github.com/Shuriken-Group/Shuriken-Analyzer.git /opt/Shuriken-Analyzer
         cd /opt/Shuriken-Analyzer
         sudo cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTION=ON
@@ -58,26 +53,34 @@ jobs:
       
     - run: |
         pip install /opt/Shuriken-Analyzer/shuriken/bindings/Python/
-        cd /home/runner
+        cd -
       if: matrix.os == 'ubuntu-latest'
-    - run: |
+
+    - name: Install Shuriken-Analyzer for MacOS
+      run: |
+        brew install cmake git
+        sudo git clone https://github.com/Shuriken-Group/Shuriken-Analyzer.git /opt/Shuriken-Analyzer
+        cd /opt/Shuriken-Analyzer
+        sudo cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTION=ON
+        sudo cmake --build build/ -j
+        sudo cmake --install build/
         sudo pip install /opt/Shuriken-Analyzer/shuriken/bindings/Python/
-        cd /Users/runner
-      if: matrix.os == 'macos-13'
+        cd -
+      if: matrix.os == 'macos-latest'
 
     - name: Install MacPorts
       uses: melusina-org/setup-macports@v1
-      if: matrix.os == 'macos-13'
+      if: matrix.os == 'macos-latest'
 
     - run: sudo apt-get -y install graphviz
       if: matrix.os == 'ubuntu-latest'
     - run: sudo port install graphviz
-      if: matrix.os == 'macos-13'
+      if: matrix.os == 'macos-latest'
     - run: choco install graphviz
       if: matrix.os == 'windows-latest'
 
     - run: python -m pip install cython numpy versioneer pybind11 matplotlib lxml 
-      if: matrix.os == 'macos-13'
+      if: matrix.os == 'macos-latest'
 
     - name: Install Quark-Engine
       run: pip install .
