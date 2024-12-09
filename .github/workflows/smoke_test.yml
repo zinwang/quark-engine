@@ -43,12 +43,10 @@ jobs:
         python -m pip install "click<=8.1.7"
    
 
-    - name: Install tools to compile Shuriken for Linux
-      run: sudo apt-get install -y cmake git
+    - run: sudo apt-get install -y cmake git
       if: matrix.os == 'ubuntu-latest'
       
-    - name: Install tools to compile Shuriken for MacOS
-      run: brew install cmake git
+    - run: brew install cmake git
       if: matrix.os == 'macos-13'
 
     - name: Install Shuriken-Analyzer for Linux/MacOS
@@ -60,7 +58,7 @@ jobs:
         sudo cmake --install build/
         pip install /opt/Shuriken-Analyzer/shuriken/bindings/Python/
         cd -
-      if: matrix.os == 'ubuntu-latest' or matrix.os == 'macos-13'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-13'
 
     - name: Install MacPorts
       uses: melusina-org/setup-macports@v1
