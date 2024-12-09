@@ -50,8 +50,6 @@ jobs:
         sudo cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTION=ON
         sudo cmake --build build/ -j
         sudo cmake --install build/
-      
-    - run: |
         pip install /opt/Shuriken-Analyzer/shuriken/bindings/Python/
         cd -
       if: matrix.os == 'ubuntu-latest'
