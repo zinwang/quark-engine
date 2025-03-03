@@ -43,7 +43,7 @@ jobs:
         python -m pip install "click<=8.1.7"
    
     - name: Install Shuriken-Analyzer
-        pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@41584c4a3bec11d11547cf9a6cff4a57dfce60e9#subdirectory=shuriken/bindings/Python/
+      run: pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@41584c4a3bec11d11547cf9a6cff4a57dfce60e9#subdirectory=shuriken/bindings/Python/
 
     - name: Install MacPorts
       uses: melusina-org/setup-macports@v1
