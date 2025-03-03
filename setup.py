@@ -16,6 +16,7 @@ required_requirements = [
     "rzpipe",
     "click",
     "r2pipe==1.8.0",
+    "ShurikenAnalyzer @ git+https://github.com/Fare9/Shuriken-Analyzer.git@41584c4a3bec11d11547cf9a6cff4a57dfce60e9#subdirectory=shuriken/bindings/Python/"
 ]
 
 quarkAgentRequirements = [
