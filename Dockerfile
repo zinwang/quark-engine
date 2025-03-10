@@ -3,7 +3,7 @@ FROM python:3.10-slim
 COPY . /app
 WORKDIR /app
 
-RUN apt-get update && apt-get install --no-install-recommends -y git graphviz cmake\
+RUN apt-get update && apt-get install --no-install-recommends -y git graphviz cmake gcc-13 g++-13\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
