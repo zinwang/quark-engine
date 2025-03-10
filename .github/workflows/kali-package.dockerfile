@@ -2,9 +2,12 @@ From  kalilinux/kali-rolling:latest
 
 RUN apt-get update -y && apt-get install --no-install-recommends -y \
     git python3 python3-pip debhelper cmake gcc-13 g++-13 iputils-ping \
-    dh-virtualenv devscripts equivs \
+    dh-virtualenv build-essential devscripts equivs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 
 WORKDIR /root/
 COPY quark-engine /root/quark-engine
