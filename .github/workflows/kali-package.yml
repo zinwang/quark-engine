@@ -22,13 +22,13 @@ jobs:
         cd -
     
     - name: Install tmate
-        run: sudo apt-get install -y tmate
+      run: sudo apt-get install -y tmate
     
     - name: Start tmate session
-        run: tmate -F
+      run: tmate -F
 
     - name: Wait for manual debugging
-        run: sleep 30m  # Keep the session alive for 30 minutes
+      run: sleep 30m  # Keep the session alive for 30 minutes
         
 #    - name: Packaging
 #      run: |
