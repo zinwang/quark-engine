@@ -8,7 +8,7 @@ export PYBUILD_DISABLE=test
 		dh $@ --with python-virtualenv
 
 override_dh_virtualenv:
-	dh_virtualenv
+	dh_virtualenv --extra-pip-arg --no-cache-dir
 	cp /usr/local/lib/libshuriken.so quark
 	dh_install
 
