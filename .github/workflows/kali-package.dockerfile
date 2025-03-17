@@ -1,10 +1,13 @@
 From  kalilinux/kali-rolling:latest
 
 RUN apt-get update -y && apt-get install --no-install-recommends -y \
-    git python3 python3-pip debhelper cmake iputils-ping\
+    git python3 python3-pip debhelper cmake\
     dh-virtualenv build-essential devscripts equivs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+COPY ping /usr/bin/ping
+RUN chmod +x /usr/bin/ping
 
 WORKDIR /root/
 COPY quark-engine /root/quark-engine
