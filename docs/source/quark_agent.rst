@@ -29,7 +29,9 @@ Quick Start
 2. Install the required packages:
 
    .. code-block::
-
+      apt install build-essential g++-13 gcc-13 cmake git iputils-ping
+      export CC=gcc-13 CXX=g++-13
+      pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@main#subdirectory=shuriken/bindings/Python/
       pip install -r requirements.txt
 
 3. Add your OpenAI API key in quarkScriptAgent.py.

@@ -69,6 +69,14 @@ Here’s a demonstration of using Quark Agent to detect the CWE-798 vulnerabilit
 ### Step 1: Environments Requirements
 
 *   Make sure your Python version is 3.10 or above.
+*   Make sure you have the following packages installed.
+  + C++ Compiler ([GCC13](https://gcc.gnu.org/)/[Microsoft Visual Studio](https://visualstudio.microsoft.com/))
+  + [Cmake](https://cmake.org/)
+  + [Git](https://git-scm.com/)
+*   Install [Shuriken-Analyzer](https://github.com/Shuriken-Group/Shuriken-Analyzer) by running:
+    ```
+    pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@main#subdirectory=shuriken/bindings/Python/
+    ```
 
 ### Step 2: Install Quark Agent
 
