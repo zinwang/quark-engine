@@ -2,53 +2,60 @@
 Installing Quark-Engine
 +++++++++++++++++++++++
 
-Steps To Install Quark-Engine
------------------------------
 
-Step 1. Install Shuriken Analyzer Required
-===========================================
+Step 1. Install Shuriken-Analyzer
+--------------------------------------------
 
--  Install packages required for Shuriken Analyzer:
-    -  In Debian-based Linux distributions (Debian/Kali/Ubuntu):
-        .. code-block::
-            $ apt install build-essential g++-13 gcc-13 cmake git iputils-ping
-            $ export CC=gcc-13 CXX=g++-13
-    -  In MacOS:
-        .. code-block::
-            $ brew install gcc@13 cmake git
-   -  In Windows: Download the following installer for Windows and execute:
-        -  `Microsoft Virtual Studio <https://visualstudio.microsoft.com/downloads/>`__
-        -  `cmake <https://cmake.org/download/>`__
-        -  `git <https://git-scm.com/downloads/win>`__
 
--  Install Shuriken Analyzer:
-    .. code-block::
-        pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@main#subdirectory=shuriken/bindings/Python/
+- Make sure you have the following packages installed:
+
+  - C++ Compiler (`GCC13 <https://gcc.gnu.org/>`_ or `Microsoft Visual Studio <https://visualstudio.microsoft.com/>`_)
+  - `CMake <https://cmake.org/>`_
+  - `Git <https://git-scm.com/>`_
+  - `iputils-ping <https://github.com/iputils/iputils/tree/master>`_ (Only required for Linux users)
+
+- Install `Shuriken-Analyzer <https://github.com/Shuriken-Group/Shuriken-Analyzer>`_ by running::
+
+    $ pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@main#subdirectory=shuriken/bindings/Python/
+
+- For example, to install Shuriken-Analyzer on Ubuntu, you can run the following commands:
+
+  ::
+
+    $ apt install build-essential g++-13 gcc-13 cmake git iputils-ping
+    $ export CC=gcc-13 CXX=g++-13
+    $ pip install git+https://github.com/Fare9/Shuriken-Analyzer.git@main#subdirectory=shuriken/bindings/Python/
 
 Step 2. Install Quark-Engine
-=============================
+------------------------------
 
 -  From PyPi:
-    .. code-block::
+
+  ::
+
         $ pip install -U quark-engine
 
--  Or you can install from source:
-    .. code-block::
+-  Or you can install Quark-Engine from the source:
+
+  ::
+
         $ git clone https://github.com/quark-engine/quark-engine.git
         $ cd quark-engine/
         $ pipenv install --skip-lock
         $ pipenv shell
 
 Step 3. Check if Quark-Engine is installed
-===========================================
+---------------------------------------------
 
-Run the help cmd of quark:
-.. code-block::
+- Run the help cmd of quark:
+
+  ::
+
     $ quark --help
 
-Once you see the following message, then you’re all set:
+- Once you see the following message, then you’re all set:
 
-.. code-block::
+  ::
 
     Usage: quark [OPTIONS]
 
@@ -87,4 +94,4 @@ Once you see the following message, then you’re all set:
       --help                          Show this message and exit.
 
 
-To learn how to scan multiple samples in a directory, please have a look at :ref:`Directory Scanning <dir_scan>`
+To learn how to scan multiple samples in a directory, please have a look at :ref:`Directory Scanning <dir_scan>`.
