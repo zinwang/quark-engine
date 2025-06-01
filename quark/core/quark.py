@@ -453,13 +453,14 @@ class Quark:
 
         return method_list
 
-    def run(self, rule_obj):
+    def run(self, rule_obj) -> int | None:
         """
         Run the five levels check to get the y_score.
 
         :param rule_obj: the instance of the RuleObject.
         :return: None
         """
+        result = 0
         self.quark_analysis.clean_result()
         self.quark_analysis.crime_description = rule_obj.crime
 
@@ -470,7 +471,9 @@ class Quark:
             rule_obj.check_item[0] = True
         else:
             # Exit if the level 1 stage check fails.
-            return
+            return result
+
+        result = 1
 
         # Level 2: Single Native API Check
         api_1_method_name = rule_obj.api[0]["method"]
@@ -490,10 +493,12 @@ class Quark:
 
         if not first_api_list and not second_api_list:
             # Exit if the level 2 stage check fails.
-            return
+            return result
 
         else:
             rule_obj.check_item[1] = True
+            
+        result = 2
 
         if first_api_list:
             self.quark_analysis.level_2_result.append(first_api_list[0])
@@ -503,11 +508,12 @@ class Quark:
         # Level 3: Both Native API Check
         if not (first_api_list and second_api_list):
             # Exit if the level 3 stage check fails.
-            return
+            return result
 
         self.quark_analysis.first_api = first_api_list[0]
         self.quark_analysis.second_api = second_api_list[0]
         rule_obj.check_item[2] = True
+        result = 3
 
         self.quark_analysis.level_3_result = [set(), set()]
 
@@ -542,7 +548,7 @@ class Quark:
 
                 if mutual_parent_function_list is None:
                     # Exit if the level 4 stage check fails.
-                    return
+                    return result
                 for parent_function in mutual_parent_function_list:
                     first_wrapper = []
                     second_wrapper = []
@@ -557,6 +563,7 @@ class Quark:
                         parent_function, first_wrapper, second_wrapper
                     ):
                         rule_obj.check_item[3] = True
+                        result = 4
                         self.quark_analysis.level_4_result.append(
                             parent_function
                         )
@@ -566,6 +573,7 @@ class Quark:
                             for i in range(2)
                         )
 
+                        # return
                         # Level 5: Handling The Same Register Check
                         if self.check_parameter(
                             parent_function,
@@ -574,9 +582,13 @@ class Quark:
                             keyword_item_list=keyword_item_list,
                         ):
                             rule_obj.check_item[4] = True
-                            self.quark_analysis.level_5_result.append(
-                                parent_function
-                            )
+                            result = 5
+                            return result
+                            # self.quark_analysis.level_5_result.append(
+                            #     parent_function
+                            # )
+            
+            return result
 
     def get_json_report(self):
         """
