@@ -28,9 +28,9 @@ jobs:
           codex -a auto-edit -q \
             "create ISSUE_BODY.md listing all commits since one month ago in markdown format"
           # Open a GitHub issue with that body
-          gh issue create \
-            --title "Monthly Commits for $(date '+%B %Y')" \
-            --body-file ISSUE_BODY.md
+          #gh issue create \
+          #  --title "Monthly Commits for $(date '+%B %Y')" \
+          #  --body-file ISSUE_BODY.md
 
       - name: Update CHANGELOG
         env:
