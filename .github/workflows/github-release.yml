@@ -25,7 +25,7 @@ jobs:
           CODEX_QUIET_MODE: 1
         run: |
           # Create a file listing all commits in the last month
-          codex --approval-mode auto-edit \
+          codex -a auto-edit \
             "create ISSUE_BODY.md listing all commits since one month ago in markdown format"
           # Open a GitHub issue with that body
           gh issue create \
@@ -37,7 +37,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
         run: |
-          codex --approval-mode auto-edit \
+          codex -a auto-edit \
             "update CHANGELOG.md by adding a new section for $(date '+%B %Y') summarizing commits from the last month"
 
       - name: Commit CHANGELOG updates
@@ -52,7 +52,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
         run: |
-          codex --approval-mode auto-edit \
+          codex -a auto-edit \
             "Update version information in the following files for next release:
             1. debian/control: Standards-Version
             2. docs/source/conf.py: release
