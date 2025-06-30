@@ -25,6 +25,7 @@ jobs:
           CODEX_QUIET_MODE: 1
         run: |
           # Create a file listing all commits in the last month
+          codex --version
           codex -a auto-edit -q \
             "create ISSUE_BODY.md listing all commits since one month ago in markdown format"
           # Open a GitHub issue with that body
