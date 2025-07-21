@@ -342,7 +342,7 @@ def entry_point(
             data.quark_analysis.score_sum, data.quark_analysis.weight_sum
         )
         print_warning(w.calculate())
-        print_info(f"Total Score: {data.quark_analysis.score_sum}")
+        print_info(f"APK Score: {data.quark_analysis.weight_sum}")
         print(data.quark_analysis.summary_report_table)
 
         if classification:
