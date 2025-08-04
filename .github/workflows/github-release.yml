@@ -33,8 +33,13 @@ jobs:
           
           # Create a file listing all commits in the last month
           codex --version
-          codex -a auto-edit -q \
-            "create ISSUE_BODY.md listing all commits since one month ago in markdown format"
+          
+          echo "Update the version number for releasing the latest version of Quark." > ISSUE_BODY.md
+          echo "In this version, the following changes will be included." >> ISSUE_BODY.md
+          codex exec --full-auto """
+            List the all merged PR numbers since one month ago and append the them to the ISSUE_BODY.md. 
+            And list them with the format - #Number (e.g. - #761), one PR number a line"""
+
           
           # Open a GitHub issue with that body
           dateInfo=$(date +%y.%-m)
