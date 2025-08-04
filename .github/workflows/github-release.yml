@@ -30,13 +30,17 @@ jobs:
           CODEX_QUIET_MODE: 1
           GH_TOKEN: ${{ github.token }}
         run: |
+          
           # Create a file listing all commits in the last month
           codex --version
           codex -a auto-edit -q \
             "create ISSUE_BODY.md listing all commits since one month ago in markdown format"
+          
           # Open a GitHub issue with that body
+          dateInfo=$(date +%y.%-m)
+          versionNum="v$dateInfo.1"
           gh issue create \
-            --title "Monthly Commits for $(date '+%B %Y')" \
+            --title "Prepare to release version $versionNum" \
             --body-file ISSUE_BODY.md
 
       - name: Update CHANGELOG
@@ -45,7 +49,7 @@ jobs:
           CODEX_QUIET_MODE: 1
         run: |
           codex -a auto-edit -q \
-            "update CHANGELOG.md by adding a new section for $(date '+%B %Y') summarizing commits from the last month"
+            "update CHANGELOG.md by adding a new section for $versionNum summarizing commits from the last month"
 
       - name: Commit CHANGELOG updates
         run: |
@@ -59,8 +63,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
         run: |
-          codex -a auto-edit -q \
-            "Update version information in the following files for next release:
+            "Update version information in the following files for next release $versionNum:
             1. debian/control: Standards-Version
             2. docs/source/conf.py: release
             3. quark/__init__.py: __version__
@@ -77,4 +80,4 @@ jobs:
           commit-message: "chore: bump version for next release"
           title: "chore: bump version and update CHANGELOG for $(date '+%B %Y')"
           body: |
-            This PR updates the version information and CHANGELOG for the upcoming release.
+            This PR updates the version information and CHANGELOG for the upcoming release $versionNum.
