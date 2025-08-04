@@ -55,7 +55,38 @@ jobs:
           CODEX_QUIET_MODE: 1
         run: |
           codex -a auto-edit -q \
-            "update CHANGELOG.md by adding a new section for $versionNum summarizing commits from the last month"
+            """ Follow the instructions below, to update debian/changelog for $versionNum. 
+                In debian/changelog, you are going to append a new section, and describe what the new
+                merged PR last month do. Here are the instruction:
+             
+                1. First, identify the Pull Requests of last month by reading ISSUE_BODY.md.
+                2. Next, for each Pull Request, choose a proper tag for it. 
+                   A tag could be from [Rule Enhancement/Document Enhancement/New Feature/Bug Fix/Dependency Update/etc.]
+                   You can reference the previous changelog to see if the tag matches the Pull Requests.
+                   Or if the Pull Requests is something that we have never done before, try to give it a proper name.
+                3. Then, combine those descriptions that are similar. For example, 
+                   Optimize the Quark Script documents for CWE-328, CWE-338, and CWE-489. (#754, #756, and #757)
+                4. Use the following template and make sure it follows the debian changelog format: 
+            
+                    quark-engine (YY.M.1-0kali1) kali-dev; urgency=medium
+      
+                    * TAG
+      
+                    - DESCRIPTION
+      
+                  --  Zin Wong <chriswangxxxxx@gmail.com> Date
+          
+                  for example, 
+          
+                  quark-engine (25.1.1-0kali1) kali-dev; urgency=medium
+
+                    * Document Enhancement
+
+                    - Optimize the Quark Script documents for CWE-94, CWE-798, and CWE-921. (#724, #722, and #723) 
+
+                  --  Zin Wong <chriswangxxxxx@gmail.com>  Tue, 01 Jan 2025 20:00:00 +0800
+          
+            """
 
       - name: Bump version info
         env:
@@ -77,7 +108,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
           git add debian/control
           git add docs/source/conf.py
           git add quark/__init__.py
@@ -88,6 +118,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: bump version for next release"
-          title: "chore: bump version and update CHANGELOG for $(date '+%B %Y')"
+          title: "Update version information to $versionNum"
           body: |
             This PR updates the version information and CHANGELOG for the upcoming release $versionNum.
