@@ -62,13 +62,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # git add CHANGELOG.md
-          # git commit -m "docs: update CHANGELOG for $(date '+%B %Y')" || echo "No changes to commit"
+          # git commit -m "docs: update CHANGELOG for $versionNum" || echo "No changes to commit"
 
       - name: Bump version info
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
         run: |
+            codex -a auto-edit -q \
             "Update version information in the following files for next release $versionNum:
             1. debian/control: Standards-Version
             2. docs/source/conf.py: release
