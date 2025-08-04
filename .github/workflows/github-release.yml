@@ -54,21 +54,27 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
         run: |
+          dateInfo=$(date +%y.%-m)
+          versionNum="v$dateInfo.1"
           codex -a auto-edit -q \
             """ Follow the instructions below, to update debian/changelog for $versionNum. 
                 In debian/changelog, you are going to append a new section, and describe what the new
-                merged PR last month do. Here are the instruction:
-             
+                merged PRs last month do. Here are the instructions:
+  
                 1. First, identify the Pull Requests of last month by reading ISSUE_BODY.md.
+
                 2. Next, for each Pull Request, choose a proper tag for it. 
                    A tag could be from [Rule Enhancement/Document Enhancement/New Feature/Bug Fix/Dependency Update/etc.]
                    You can reference the previous changelog to see if the tag matches the Pull Requests.
-                   Or if the Pull Requests is something that we have never done before, try to give it a proper name.
+                   Or, if the Pull Requests are something we have never done before, try to give them a proper name.
+
                 3. Then, combine those descriptions that are similar. For example, 
                    Optimize the Quark Script documents for CWE-328, CWE-338, and CWE-489. (#754, #756, and #757)
-                4. Use the following template and make sure it follows the debian changelog format: 
+
+                4. Use the following template and make sure it follows the Debian changelog format. 
+                   (Also, use Zin Wong <chriswangxxxxx@gmail.com> as maintainer's info):
             
-                    quark-engine (YY.M.1-0kali1) kali-dev; urgency=medium
+                  quark-engine (YY.M.1-0kali1) kali-dev; urgency=medium
       
                     * TAG
       
@@ -106,18 +112,20 @@ jobs:
 
       - name: Commit version info bumps
         run: |
+          dateInfo=$(date +%y.%-m)
+          versionNum="v$dateInfo.1"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add debian/control
           git add docs/source/conf.py
           git add quark/__init__.py
+          git restore --staged ISSUE_BODY.md
           git commit -m "Update version information for $versionNum" || echo "No changes to commit"          
 
       - name: Create pull request for version bump
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: bump version for next release"
           title: "Update version information to $versionNum"
           body: |
             This PR updates the version information and CHANGELOG for the upcoming release $versionNum.
