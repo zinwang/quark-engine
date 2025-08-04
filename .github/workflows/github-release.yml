@@ -80,7 +80,7 @@ jobs:
       
                     - DESCRIPTION
       
-                  --  Zin Wong <chriswangxxxxx@gmail.com> Date
+                  --  Zin Wong <chriswangxxxxx@gmail.com> RELEASE_TIME
           
                   for example, 
           
@@ -119,7 +119,7 @@ jobs:
           git add debian/control
           git add docs/source/conf.py
           git add quark/__init__.py
-          git restore --staged ISSUE_BODY.md
+          git rm ISSUE_BODY.md
           git commit -m "Update version information for $versionNum" || echo "No changes to commit"          
 
       - name: Create pull request for version bump
@@ -128,4 +128,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Update version information to $versionNum"
           body: |
-            This PR updates the version information and CHANGELOG for the upcoming release $versionNum.
+            This PR updates the version information and CHANGELOG for the upcoming release.
