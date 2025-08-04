@@ -13,7 +13,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -24,24 +26,23 @@ jobs:
         run: |
           sudo npm install -g @openai/codex@0.1.2505172129
 
-      - name: Generate commit summary issue
+      - name: Install dependencies
+        run: |
+          sudo apt install git
+
+      - name: Generate PR summary issue
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
           GH_TOKEN: ${{ github.token }}
         run: |
           
-          # Create a file listing all commits in the last month
-          codex --version
-          
           echo "Update the version number for releasing the latest version of Quark." > ISSUE_BODY.md
           echo "In this version, the following changes will be included." >> ISSUE_BODY.md
-          codex exec --full-auto """
-            List the all merged PR numbers since one month ago and append the them to the ISSUE_BODY.md. 
-            And list them with the format - #Number (e.g. - #761), one PR number a line"""
-
+          echo " " >> ISSUE_BODY.md
+          git log --since="1 month ago" --oneline | grep "(#" | awk -F"#" '{print $2}' | awk -F")" '{printf "- #%s\n", $1}' >> ISSUE_BODY.md
           
-          # Open a GitHub issue with that body
+          
           dateInfo=$(date +%y.%-m)
           versionNum="v$dateInfo.1"
           gh issue create \
