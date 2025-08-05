@@ -49,3 +49,8 @@ jobs:
             --draft \
             --title "$versionNum" \
             --notes "$(cat changelog.txt)"
+
+      - name: Delete Branch
+        uses: peter-evans/delete-branch@v4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
