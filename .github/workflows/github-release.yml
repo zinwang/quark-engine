@@ -31,6 +31,7 @@ jobs:
           sudo apt install git
 
       - name: Generate PR summary issue
+        id: gen_issue
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
@@ -58,9 +59,12 @@ jobs:
           dateInfo=$(date +%y.%-m)
           versionNum="v$dateInfo.1"
           
-          gh issue create \
+          issueNum=$(gh issue create \
             --title "Prepare to release version $versionNum" \
-            --body-file ISSUE_BODY.md
+            --body-file ISSUE_BODY.md | awk -F"/" '{print $NF}')
+          
+          echo "version=$versionNum" >> $GITHUB_OUTPUT
+          echo "issue=$issueNum" >> $GITHUB_OUTPUT
 
       - name: Update changelog for Kali package
         env:
@@ -135,6 +139,6 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Update version information to $versionNum"
+          title: "Update version information to ${{ steps.gen_issue.outputs.version }}"
           body: |
-            This PR updates the version information and CHANGELOG for the upcoming release.
+            Refer to issue #${{ steps.gen_issue.outputs.issue }}.
