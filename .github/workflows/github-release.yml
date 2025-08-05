@@ -43,7 +43,6 @@ jobs:
       
           firstDayOfLastMonth="$(date -d "$(date +%Y-%m-01) -1 month" +'%Y-%m-%d')"
           lastDayOfLastMonth="$(date -d "$(date +%Y-%m-01) -1 day" +'%Y-%m-%d')"
-          git log --since=$firstDayOfLastMonth --until=$lastDayOfLastMonth --oneline | grep "(#" | awk -F"#" '{print $2}' | awk -F")" '{printf "- #%s\n", $1}' >> ISSUE_BODY.md
           
           sudo chmod o+x ISSUE_BODY.md
              
@@ -51,9 +50,9 @@ jobs:
             """ 
               Follow the following instructions:
                 1. Read the git commit messages from $firstDayOfLastMonth to $lastDayOfLastMonth
-                2. Show the commit message for the “Prepare to release version …” commit, and all preceding commit messages in Step 1.
+                2. Show the commit message after the “Prepare to release version …” commit.
                 3. Show the #Number in those commits messages in Step 2.
-                4. Remove those #Number shown in Step3. from ISSUE_BODY.md
+                4. List the #Number in Step 3. to ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
             """
           
           dateInfo=$(date +%y.%-m)
