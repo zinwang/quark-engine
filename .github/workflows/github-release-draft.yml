@@ -8,7 +8,7 @@ jobs:
   on-merge:
     if: |
       (github.event.pull_request.merged == true 
-      && startsWith(github.event.pull_request.title, "Update version information to"))
+      && startsWith(github.event.pull_request.title, 'Update version information to'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
