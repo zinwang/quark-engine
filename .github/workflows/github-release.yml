@@ -104,6 +104,7 @@ jobs:
                   --  Zin Wong <chriswangxxxxx@gmail.com>  Tue, 01 Jan 2025 20:00:00 +0800
           
             """
+          rm ISSUE_BODY.md
 
       - name: Update version information
         env:
@@ -123,8 +124,6 @@ jobs:
 
       - name: Commit the changes
         run: |
-          dateInfo=$(date +%y.%-m)
-          versionNum="v$dateInfo.1"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add debian/control
