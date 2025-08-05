@@ -1,4 +1,4 @@
-name: Monthly GitHub Release CI
+name: Generate GitHub Release Issue/PR
 
 on:
   push:
