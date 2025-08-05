@@ -119,7 +119,6 @@ jobs:
           git add debian/control
           git add docs/source/conf.py
           git add quark/__init__.py
-          git rm ISSUE_BODY.md
           git commit -m "Update version information for $versionNum" || echo "No changes to commit"          
 
       - name: Create pull request for version bump
