@@ -45,7 +45,7 @@ jobs:
         run: |
           dateInfo=$(date +%y.%-m)
           versionNum="v$dateInfo.1"
-          gh release create $versionNum \
+          gh release create "$versionNum" \
             --draft \
-            --title $versionNum \
-            --notes $(cat changelog.txt)
+            --title "$versionNum" \
+            --notes "$(cat changelog.txt)"
