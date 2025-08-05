@@ -1,4 +1,4 @@
-name: Monthly Codex CI
+name: Monthly GitHub Release CI
 
 on:
   push:
@@ -40,12 +40,10 @@ jobs:
           echo "Update the version number for releasing the latest version of Quark." > ISSUE_BODY.md
           echo "In this version, the following changes will be included." >> ISSUE_BODY.md
           echo " " >> ISSUE_BODY.md
-      
+          sudo chmod o+x ISSUE_BODY.md
+          
           firstDayOfLastMonth="$(date -d "$(date +%Y-%m-01) -1 month" +'%Y-%m-%d')"
           lastDayOfLastMonth="$(date -d "$(date +%Y-%m-01) -1 day" +'%Y-%m-%d')"
-          
-          sudo chmod o+x ISSUE_BODY.md
-             
           lastVersionNum="v$(date -d "$(date +%Y-%m-01) -1 month" +'%y.%-m.1')"
           
           codex -a auto-edit -q \
@@ -64,13 +62,11 @@ jobs:
             --title "Prepare to release version $versionNum" \
             --body-file ISSUE_BODY.md
 
-      - name: Update CHANGELOG
+      - name: Update changelog for Kali package
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
-        run: |
-          dateInfo=$(date +%y.%-m)
-          versionNum="v$dateInfo.1"
+        run: |          
           codex -a auto-edit -q \
             """ Follow the instructions below, to update debian/changelog for $versionNum. 
                 In debian/changelog, you are going to append a new section, and describe what the new
@@ -109,7 +105,7 @@ jobs:
           
             """
 
-      - name: Bump version info
+      - name: Update version information
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           CODEX_QUIET_MODE: 1
@@ -125,7 +121,7 @@ jobs:
              - X: release count within that month (normally 1)
             For example, 25.2.1 means the 1st release in February 2025."
 
-      - name: Commit version info bumps
+      - name: Commit the changes
         run: |
           dateInfo=$(date +%y.%-m)
           versionNum="v$dateInfo.1"
