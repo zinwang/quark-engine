@@ -46,17 +46,17 @@ jobs:
           git log --since=$firstDayOfLastMonth --until=$lastDayOfLastMonth --oneline | grep "(#" | awk -F"#" '{print $2}' | awk -F")" '{printf "- #%s\n", $1}' >> ISSUE_BODY.md
           
           sudo chmod o+x ISSUE_BODY.md
-          
-          dateInfo=$(date +%y.%-m)
-          versionNum="v$dateInfo.1"
-          
+             
           codex -a auto-edit -q \
             """ 
               Follow the following instructions:
                 1. Read the git commit messages from $firstDayOfLastMonth to $lastDayOfLastMonth
-                2. Show the commits messages before 'Prepare to release version $versionNum'.
+                2. Show the commits messages before 'Prepare to release version ...'.
                 3. Show the #Number in those commits messages in Step 2.
             """
+          
+          dateInfo=$(date +%y.%-m)
+          versionNum="v$dateInfo.1"
           
           gh issue create \
             --title "Prepare to release version $versionNum" \
