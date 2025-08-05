@@ -54,7 +54,7 @@ jobs:
                 1. Read the git commit messages from $firstDayOfLastMonth to $lastDayOfLastMonth
                 2. Show all the commit messages after the “Prepare to release version $lastVersionNum” commit.
                 3. Show the #Numbers in those commit messages in Step 2.
-                4. List the #Numbers in Step 3. to ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
+                4. Append the #Numbers in Step 3. to ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
             """
           
           dateInfo=$(date +%y.%-m)
