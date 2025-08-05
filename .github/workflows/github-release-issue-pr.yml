@@ -80,9 +80,9 @@ jobs:
         run: |          
           codex -a auto-edit -q \
             """ 
-              Follow the instructions below, to update debian/changelog for $versionNum. 
-                In debian/changelog, you are going to append a new section, and describe what the new
-                merged PRs last month do. Here are the instructions:
+              Follow the instructions below to update debian/changelog for $versionNum. 
+              In debian/changelog, you are going to append a new section, and describe what the new
+              merged PRs last month do. Here are the instructions:
   
                 1. First, identify the Pull Requests of last month by reading ISSUE_BODY.md.
 
