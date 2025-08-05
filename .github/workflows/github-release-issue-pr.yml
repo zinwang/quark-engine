@@ -4,14 +4,21 @@ on:
   push:
     branches: [ master ]
   schedule:
-    # Runs at 00:00 UTC on the first day of each month
-    - cron: '45 6 1 * *'
+    # Runs at 00:00 UTC on the Monday within the first 7 days of each month
+    - cron: '0 0 1-7 * 1'
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check if this Wednesday is the first of a month
+        run: |
+          upcoming_wed=$(date -d "next Wednesday" +%-d)
+          if (( upcoming_wed > 7 )); then
+            exit 0
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
