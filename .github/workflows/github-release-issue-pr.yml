@@ -79,7 +79,8 @@ jobs:
           CODEX_QUIET_MODE: 1
         run: |          
           codex -a auto-edit -q \
-            """ Follow the instructions below, to update debian/changelog for $versionNum. 
+            """ 
+              Follow the instructions below, to update debian/changelog for $versionNum. 
                 In debian/changelog, you are going to append a new section, and describe what the new
                 merged PRs last month do. Here are the instructions:
   
@@ -123,15 +124,17 @@ jobs:
           CODEX_QUIET_MODE: 1
         run: |
             codex -a auto-edit -q \
-            "Update version information in the following files for next release $versionNum:
-            1. debian/control: Standards-Version
-            2. docs/source/conf.py: release
-            3. quark/__init__.py: __version__
-            Where YY.MM.X stands for:
-             - YY: last two digits of the year
-             - MM: month number
-             - X: release count within that month (normally 1)
-            For example, 25.2.1 means the 1st release in February 2025."
+              """
+                Update version information in the following files for next release $versionNum:
+                  1. debian/control: Standards-Version
+                  2. docs/source/conf.py: release
+                  3. quark/__init__.py: __version__
+                  Where YY.MM.X stands for:
+                   - YY: last two digits of the year
+                   - MM: month number
+                   - X: release count within that month (normally 1)
+                  For example, 25.2.1 means the 1st release in February 2025.
+              """
 
       - name: Commit the changes
         run: |
@@ -143,7 +146,7 @@ jobs:
           git add quark/__init__.py
           git commit -m "Update version information for ${{ steps.gen_issue.outputs.version }}" || echo "No changes to commit"          
 
-      - name: Create pull request for version bump
+      - name: Create pull request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
