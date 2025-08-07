@@ -1,3 +1,28 @@
+quark-engine (25.8.1-0kali1) kali-dev; urgency=medium
+
+  * New Feature
+
+    - Add Quark Script APIs and showcase for detecting CWE-297. (#777 and #778)
+    - Add Quark Script showcase for detecting CWE-329. (#775)
+
+  * Document Enhancement
+
+    - Optimize the Quark Script documents for CWE-24 and CWE-1204. (#781 and #779)
+
+ --  Zin Wong <chriswangxxxxx@gmail.com>  Thu, 07 Aug 2025 19:41:16 +0800
+
+quark-engine (25.7.1-0kali1) kali-dev; urgency=medium
+
+  * Rule Enhancement
+
+    - Add 22 new rules for the DroidKungFu malware family (#762)
+
+  * Document Enhancement
+
+    - Optimize the Quark Script documents for CWE-502 and CWE-532. (#769 and #764)
+
+ --  ChihHuan Tsai <jerry99.tasi@gmail.com>  Tue, 03 Jun 2025 20:00:00 +0800
+
 quark-engine (25.7.1-0kali1) kali-dev; urgency=medium
 
   * Rule Enhancement
