@@ -56,7 +56,7 @@ jobs:
           lastDayOfLastMonth="$(date -d "$(date -d "next Wednesday" +%Y-%m-01) -1 day" +'%Y-%m-%d')"
           git fetch --tags
           lastVersionNum="$(git tag --sort=-creatordate | head -n 1)"
-          
+          echo $lastVersionNum
           codex -a auto-edit -q \
             """ 
               Follow the following instructions:
