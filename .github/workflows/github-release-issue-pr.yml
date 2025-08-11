@@ -69,9 +69,10 @@ jobs:
           versionNum=$(date -d "next Wednesday" +'%y.%-m.1')
           releaseMonth=$(echo $versionNum | awk -F. '{printf "%s.%s", $1, $2}')
           lastReleaseMonth=$(echo $lastVersionNum | awk -F. '{printf "%s.%s", $1, $2}')
-          
+          echo $lastReleaseMonth
           if [ $releaseMonth = $lastReleaseMonth ]; then
             versionNum="$(echo $lastVersionNum | awk -F. -v OFS=. '{$NF+=1; print}')"
+            echo $versionNum
           fi
           
           issueNum=$(gh issue create \
