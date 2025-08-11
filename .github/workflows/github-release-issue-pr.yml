@@ -90,7 +90,7 @@ jobs:
           versionNum=${{ steps.gen_issue.outputs.version }}
           codex -a auto-edit -q \
             """ 
-              Follow the instructions below to update debian/changelog for $versionNum. 
+              Follow the instructions below to update debian/changelog for ${{ steps.gen_issue.outputs.version }}. 
               In debian/changelog, you are going to append a new section, and describe what the new
               merged PRs last month do. Here are the instructions:
   
@@ -136,7 +136,7 @@ jobs:
             versionNum=${{ steps.gen_issue.outputs.version }}
             codex -a auto-edit -q \
               """
-                Update version information in the following files for next release $versionNum:
+                Update version information in the following files for next release ${{ steps.gen_issue.outputs.version }}:
                   1. debian/control: Standards-Version
                   2. docs/source/conf.py: release
                   3. quark/__init__.py: __version__
