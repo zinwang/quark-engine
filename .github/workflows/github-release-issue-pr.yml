@@ -66,11 +66,11 @@ jobs:
                 4. Append the #Numbers in Step 3. after the content of ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
             """
           
-          versionNum=$(date -d "next Wednesday" +'%y.%-m.1')
-          releaseMonth=$(echo $versionNum | awk -F. '{printf "%s.%s", $1, $2}')
-          lastReleaseMonth=$(echo $lastVersionNum | awk -F. '{printf "%s.%s", $1, $2}')
+          versionNum="v$(date -d "next Wednesday" +'%y.%-m.1')"
+          releaseMonthInfo=$(echo $versionNum | awk -F. '{printf "%s.%s", $1, $2}')
+          lastReleaseMonthInfo=$(echo $lastVersionNum | awk -F. '{printf "%s.%s", $1, $2}')
           
-          if [ $releaseMonth = $lastReleaseMonth ]; then
+          if [ $releaseMonthInfo = $lastReleaseMonthInfo ]; then
             versionNum="$(echo $lastVersionNum | awk -F. -v OFS=. '{$NF+=1; print}')"
           fi
           
