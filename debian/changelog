@@ -1,3 +1,11 @@
+quark-engine (25.9.1-0kali1) kali-dev; urgency=medium
+
+  * New Feature
+
+    - Automate GitHub release process with Codex and GitHub Action. (#782)
+
+ --  Zin Wong <chriswangxxxxx@gmail.com>  Mon, 11 Aug 2025 13:33:42 +0800
+
 quark-engine (25.8.1-0kali1) kali-dev; urgency=medium
 
   * New Feature
