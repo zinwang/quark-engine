@@ -115,7 +115,7 @@ jobs:
       
                   --  Zin Wong <chriswangxxxxx@gmail.com> RELEASE_TIME_TODAY
           
-                  , where YY.M.X should aligned with $versionNum and RELEASE_TIME_TODAY is $dateToday. For example, 
+                  , where YY.M.X should align with $versionNum and RELEASE_TIME_TODAY is $dateToday. For example, 
           
                   quark-engine (25.1.1-0kali1) kali-dev; urgency=medium
 
