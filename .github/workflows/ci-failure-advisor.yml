@@ -50,7 +50,7 @@ jobs:
           echo "failedRunEvent=$failedRunEvent" >> $GITHUB_OUTPUT
           echo "Failed Run Event: $failedRunEvent"
           
-          errorLog=$(gh run view $failedRunId --log)
+          errorLog=$(gh run view $failedRunId --log-failed)
           echo $errorLog > errorLog.txt
           
       - name: Analysis the error log
