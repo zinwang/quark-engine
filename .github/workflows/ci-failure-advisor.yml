@@ -44,7 +44,11 @@ jobs:
           
           failedCIName=$(gh run view $failedRunId --json name --jq .name)
           echo "failedCIName=$failedCIName" >> $GITHUB_OUTPUT
-          echo "Failed CI Name: failedCIName"
+          echo "Failed CI Name: $failedCIName"
+          
+          failedRunEvent=$(gh api repos/${{ github.repository }}/actions/runs/$failedRunId --jq '.event')
+          echo "failedRunEvent=$failedRunEvent" >> $GITHUB_OUTPUT
+          echo "Failed Run Event: $failedRunEvent"
           
           errorLog=$(gh run view $failedRunId --log)
           echo $errorLog > errorLog.txt
