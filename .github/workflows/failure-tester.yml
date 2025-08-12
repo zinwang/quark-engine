@@ -27,8 +27,6 @@ jobs:
           sudo apt install git
 
       - name: Generate PR summary issue
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           ciLog=$(gh run view $GITHUB_RUN_ID --log)
           echo $ciLog
