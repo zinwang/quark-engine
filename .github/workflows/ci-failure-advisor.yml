@@ -29,10 +29,45 @@ jobs:
         run: |
           sudo apt install git
 
-      - name: Generate PR summary issue
+      - name: Fetch info from the failed run
+        id: fetch_info
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           failedRunId=${{ github.event.workflow_run.id }}
-          ciLog=$(gh run view $failedRunId --log-failed)
-          echo $ciLog | head -2
+          echo "failedRunId=$failedRunId" >> $GITHUB_OUTPUT
+          echo "Failed Run ID: $failedRunId"
+          
+          failedRunConfigFile=$(gh api repos/${{ github.repository }}/actions/runs/$failedRunId --jq '.path')
+          echo "failedRunConfigFile=$failedRunConfigFile" >> $GITHUB_OUTPUT
+          echo "Failed Run Config File: $failedRunConfigFile"
+          
+          failedCIName=$(gh run view $failedRunId --json name --jq .name)
+          echo "failedCIName=$failedCIName" >> $GITHUB_OUTPUT
+          echo "Failed CI Name: failedCIName"
+          
+          errorLog=$(gh run view $failedRunId --log)
+          echo $errorLog > errorLog.txt
+          
+      - name: Analysis the error log
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+          CODEX_QUIET_MODE: 1
+        run: |      
+          failedRunConfigFile=${{ steps.fetch_info.outputs.failedRunConfigFile }}
+          codex -a auto-edit -q \
+            """
+              You are an experienced DevOps engineer, well-versed in GitHub Actions CI, and Python development. 
+              I’ve encountered a GitHub Actions failure in a Python project and need your advice on how to resolve it.
+
+              Here are the data you can investigate:
+                1. ``./`` directory: the source code of the Python project
+                2. ``$failedRunConfigFile`` file: the config file of the CI
+                3. ``errorLog.txt`` file: the error log
+              
+              Please analyze the data above and record the two pieces of information in ``analysis.md``:
+                1. The root cause of the failure
+                2. The most possible solution to the problems     
+              (Please attach credible references such as StackOverflow solutions or documentation)
+            """
+            cat analysis.md
