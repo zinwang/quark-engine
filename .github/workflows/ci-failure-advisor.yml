@@ -34,5 +34,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           failedRunId=${{ github.event.workflow_run.id }}
-          ciLog=$(gh run view $failedRunId --log)
-          echo $ciLog | grep Error
+          ciLog=$(gh run view $failedRunId --log-failed)
+          echo $ciLog
