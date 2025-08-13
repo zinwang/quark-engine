@@ -62,7 +62,7 @@ jobs:
           codex -a auto-edit -q \
             """ 
               Follow the following instructions:
-                1. Read the git commit messages from $monthOfLastRelease this year.
+                1. Read the git commit messages from the month $monthOfLastRelease of this year.
                 2. Show all the commit messages after the “Update version information to $lastVersionNum” commit.
                 3. Show the #Numbers in those commit messages in Step 2.
                 4. Append the #Numbers in Step 3. after the content of ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
@@ -93,9 +93,9 @@ jobs:
             """ 
               Follow the instructions below to update debian/changelog for $versionNum. 
               In debian/changelog, you are going to append a new section, and describe what the new
-              merged PRs last month do. Here are the instructions:
+              merged PRs since the last release do. Here are the instructions:
   
-                1. First, identify the Pull Requests of last month by reading ISSUE_BODY.md.
+                1. First, identify the Pull Requests since the last release by reading ISSUE_BODY.md.
 
                 2. Next, for each Pull Request, choose a proper tag for it. 
                    A tag could be from [Rule Enhancement/Document Enhancement/New Feature/Bug Fix/Dependency Update/etc.]
@@ -106,7 +106,7 @@ jobs:
                    Optimize the Quark Script documents for CWE-328, CWE-338, and CWE-489. (#754, #756, and #757)
 
                 4. Use the following template and make sure it follows the Debian changelog format. 
-                   (Also, use Zin Wong <chriswangxxxxx@gmail.com> as maintainer's info):
+                   (Also, use Zin Wong <chriswangxxxxx@gmail.com> as the maintainer's info):
             
                   quark-engine (YY.M.X-0kali1) kali-dev; urgency=medium
       
