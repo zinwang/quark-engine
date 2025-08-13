@@ -57,18 +57,19 @@ jobs:
           
           git fetch --tags
           lastVersionNum="$(git tag --sort=-creatordate | head -n 1)"
+          monthOfLastRelease=$(echo $lastVersionNum | awk -F. '{print $2}')
           
           codex -a auto-edit -q \
             """ 
               Follow the following instructions:
-                1. Show all the commit messages after the “Update version information to $lastVersionNum” commit.
-                2. Show the #Numbers in those commit messages in Step 2.
-                3. Append the #Numbers in Step 3. after the content of ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
+                1. Read the git commit messages from $monthOfLastRelease this year.
+                2. Show all the commit messages after the “Update version information to $lastVersionNum” commit.
+                3. Show the #Numbers in those commit messages in Step 2.
+                4. Append the #Numbers in Step 3. after the content of ISSUE_BODY.md [with the format - #Number (e.g. - #761), one number a line]
             """
           
           versionNum="v$(date -d "next Wednesday" +'%y.%-m.1')"
           monthOfThisRelease=$(echo $versionNum | awk -F. '{print $2}')
-          monthOfLastRelease=$(echo $lastVersionNum | awk -F. '{print $2}')
           
           if [ $monthOfThisRelease = $monthOfLastRelease ]; then
             versionNum="$(echo $lastVersionNum | awk -F. -v OFS=. '{$NF+=1; print}')"
