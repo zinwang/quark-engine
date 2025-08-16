@@ -12,4 +12,4 @@ COPY quark-engine /root/quark-engine
 WORKDIR /root/quark-engine
 RUN touch Makefile
 
-CMD ["dpkg-buildpackage", "-us", "-uc", "-b"]
+CMD ["dpkg-buildpackage", "-us", "-uc", "-b"

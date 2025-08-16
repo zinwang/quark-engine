@@ -55,10 +55,6 @@ jobs:
         # Install click <= 8.1.7 for CLI supports
         python -m pip install "click<=8.1.7"
         
-        # Install Rust and Ares
-        wget https://sh.rustup.rs -O install.sh
-        sh install.sh -y
-        cargo install project_ares@0.10.0
 
     - name: Install Shuriken-Analyzer
       run: |
