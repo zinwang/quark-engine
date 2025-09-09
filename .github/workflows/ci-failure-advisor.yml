@@ -188,7 +188,7 @@ jobs:
                 3. The timestamp of the workflow runs is $triggerTime.
               
               Please perform the following tasks:
-                1. Analyze the root cause of the failure by checking:
+                1. Analyze the root cause of each failure listed error_logs.md in by checking:
                     + Is it a temporary network error that could be resolved by re-running the workflow?
                     + Is it caused by incorrect workflow settings?
                     + Is it related to recent commit changes in the source code?
