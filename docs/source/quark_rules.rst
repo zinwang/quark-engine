@@ -856,7 +856,7 @@ The table below lists the APKs we tested.
 New Quark Rules For DawDropper
 ===============================
 
-New Quark rules (#243 - #245) are now available. These rules target `DawDropper <https://www.trendmicro.com/en_us/research/22/g/examining-new-dawdropper-banking-dropper-and-daas-on-the-dark-we.html>`_\ , a malware family that installs additional apps. Check `here <https://github.com/ev-flow/quark-rules>`_ for the rule details.
+New Quark rules (#243 - #245) are now available. These rules target `DawDropper <https://www.trendmicro.com/en_us/research/22/g/examining-new-dawdropper-banking-dropper-and-daas-on-the-dark-we.html>`_\ , a malware family that downloads and installs additional APKs. Check `here <https://github.com/ev-flow/quark-rules>`_ for the rule details.
 
 With these rules, Quark is now able to identify the DawDropper malware family as high-risk. In our experiment, Quark achieved 100% accuracy and 100% precision. Please check :ref:`here <list-of-tested-apks-dawdropper>` for the APKs we tested.
 
@@ -871,9 +871,25 @@ Below is a summary report of a DawDropper sample (\ ``a1298cc00605c79679f72b22d5
 Identified Well-Known Threats
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With Quark's `rule classification <https://quark-engine.readthedocs.io/en/latest/quark_reports.html#rule-classification>`_ feature, analysts can generate behavior maps and see how behaviors are related. This feature helps identify one well-known threat from DawDropper, as shown below.
+With Quark's `rule classification <https://quark-engine.readthedocs.io/en/latest/quark_reports.html#rule-classification>`_ feature, analysts can generate behavior maps and see how behaviors are related. This feature helps identify two well-known threats from DawDropper, as shown below.
 
-**1. Install additional apps**
+**1. Download APKs from remote servers**
+
+
+.. image:: https://i.postimg.cc/VLW5TKMP/downloadapk.png
+   :target: https://i.postimg.cc/VLW5TKMP/downloadapk.png
+   :alt:
+
+
+The behavior map shows that the ``Lcom/techmediapro/photoediting/core/MainActivity;N0`` function downloads APKs from remote servers.
+
+Behaviors detected by Quark:
+
+
+* Connect to a URL and read data from it (#00243)
+* Write data to a file (#00244)
+
+**2. Install additional APKs**
 
 
 .. image:: https://i.postimg.cc/nc663z2H/installapk.png
