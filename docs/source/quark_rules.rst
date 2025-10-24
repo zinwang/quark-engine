@@ -881,7 +881,7 @@ With Quark's `rule classification <https://quark-engine.readthedocs.io/en/latest
    :alt:
 
 
-The behavior map shows that the ``Lcom/techmediapro/photoediting/core/MainActivity;N0`` function downloads APKs from remote servers.
+The behavior map shows that the ``Lcom/techmediapro/photoediting/core/MainActivity;N0`` function downloads a file from a URL. If the URL points to an APK, it indicates that the function downloads an additional APK from a remote server.
 
 Behaviors detected by Quark:
 
