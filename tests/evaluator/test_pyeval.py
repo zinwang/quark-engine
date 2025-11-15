@@ -27,21 +27,9 @@ def instructions():
     del ins
 
 
-APK_SOURCE = (
-    "https://github.com/quark-engine/apk-samples"
-    "/raw/master/malware-samples/13667fe3b0ad496a0cd157f34b7e0c991d72a4db.apk"
-)
-APK_FILENAME = "13667fe3b0ad496a0cd157f34b7e0c991d72a4db.apk"
-
-
 @pytest.fixture(scope="module")
-def apkinfo():
-    r = requests.get(APK_SOURCE, allow_redirects=True)
-    file = open(APK_FILENAME, "wb")
-    file.write(r.content)
-
-    apkinfo = AndroguardImp(APK_FILENAME)
-
+def apkinfo(SAMPLE_PATH_13667):
+    apkinfo = AndroguardImp(SAMPLE_PATH_13667)
     yield apkinfo
 
 
@@ -52,24 +40,21 @@ def pyeval(apkinfo):
     # mock_hash_table = [...[], [v4_mock_variable_obj], [], [],
     # [v9_mock_variable_obj]....]
     v4_mock_variable_obj = RegisterObject(
-        "v4",
         "Lcom/google/progress/SMSHelper;",
         value_type="Lcom/google/progress/SMSHelper;",
     )
     v5_mock_variable_obj = RegisterObject(
-        "v5", "some_number", "java.lang.String.toString()", value_type="I"
+        "some_number", "java.lang.String.toString()", value_type="I"
     )
     v6_mock_variable_obj = RegisterObject(
-        "v6", "an_array", "java.lang.Collection.toArray()", value_type="[I"
+        "an_array", "java.lang.Collection.toArray()", value_type="[I"
     )
-    v7_mock_variable_obj = RegisterObject("v7", "a_float", value_type="F")
+    v7_mock_variable_obj = RegisterObject("a_float", value_type="F")
     v8_mock_variable_obj = RegisterObject(
-        "v8",
         "ArrayMap object",
         value_type="Landroid/support/v4/util/ArrayMap;",
     )
     v9_mock_variable_obj = RegisterObject(
-        "v9",
         "some_string",
         "java.io.file.close()",
         value_type="Ljava/lang/String;",
@@ -376,6 +361,21 @@ class TestPyEval:
         ]
         assert pyeval.ret_type == "Z"
 
+    def test_invoke_virtual_range_with_valid_mnemonic(self, pyeval):
+        instruction = [
+            "invoke-virtual/range",
+            "v4",
+            "v9",
+            (
+                "Landroid/support/v4/util/ArrayMap;"
+                "->entrySet()Ljava/util/Set;(ArrayMap object)"
+            ),
+        ]
+
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_VIRTUAL(instruction)
+            mock.assert_called_once_with(instruction, look_up=True)
+
     # Tests for invoke_direct
     def test_invoke_direct_with_valid_mnemonic(self, pyeval):
         instruction = [
@@ -392,10 +392,40 @@ class TestPyEval:
             pyeval.INVOKE_DIRECT(instruction)
             mock.assert_called_once_with(instruction)
 
+    def test_invoke_direct_range_with_valid_mnemonic(self, pyeval):
+        instruction = [
+            "invoke-direct/range",
+            "v4",
+            "v9",
+            (
+                "Landroid/support/v4/util/ArrayMap;"
+                "->entrySet()Ljava/util/Set;(ArrayMap object)"
+            ),
+        ]
+
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_DIRECT(instruction)
+            mock.assert_called_once_with(instruction)
+
     # Tests for invoke_static
     def test_invoke_static_with_valid_mnemonic(self, pyeval):
         instruction = [
             "invoke-static",
+            "v4",
+            "v9",
+            (
+                "Landroid/support/v4/util/ArrayMap;"
+                "->entrySet()Ljava/util/Set;(ArrayMap object)"
+            ),
+        ]
+
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_STATIC(instruction)
+            mock.assert_called_once_with(instruction)
+
+    def test_invoke_static_range_with_valid_mnemonic(self, pyeval):
+        instruction = [
+            "invoke-static/range",
             "v4",
             "v9",
             (
@@ -441,6 +471,21 @@ class TestPyEval:
         ]
         assert pyeval.ret_type == "Ljava/util/Set;"
 
+    def test_invoke_interface_range_with_valid_mnemonic(self, pyeval):
+        instruction = [
+            "invoke-interface/range",
+            "v4",
+            "v9",
+            (
+                "Landroid/support/v4/util/ArrayMap;"
+                "->entrySet()Ljava/util/Set;(ArrayMap object)"
+            ),
+        ]
+
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_INTERFACE(instruction)
+            mock.assert_called_once_with(instruction, look_up=True)
+
     # Tests for invoke-super
     def test_invoke_super_with_valid_mnemonic(self, pyeval):
         instruction = ["invoke-super", "v4", "v9", "some_function()V"]
@@ -468,6 +513,15 @@ class TestPyEval:
         ]
         assert pyeval.ret_type == "Ljava/lang/String;"
 
+    def test_invoke_super_range_with_valid_mnemonic(self, pyeval):
+        instruction = ["invoke-super/range", "v4", "v9", "some_function()V"]
+
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_SUPER(instruction)
+            mock.assert_called_once_with(
+                instruction, look_up=True, skip_self=True
+            )
+
     # Tests for invoke polymorphic
     def test_invoke_polymorphic_with_valid_mnemonic(self, pyeval):
         instruction = [
@@ -482,9 +536,28 @@ class TestPyEval:
             pyeval.INVOKE_POLYMORPHIC(instruction)
             mock.assert_called_once_with(instruction)
 
+    def test_invoke_polymorphic_range_with_valid_mnemonic(self, pyeval):
+        instruction = [
+            "invoke-polymorphic/range",
+            "v4",
+            "v9",
+            "some_function()V",
+            "prototype_idx",
+        ]
+
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_POLYMORPHIC(instruction)
+            mock.assert_called_once_with(instruction)
+
     # Tests for invoke-custom
     def test_invoke_custom_with_valid_mnemonic(self, pyeval):
         instruction = ["invoke-custom", "v4", "v9", "method"]
+        with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
+            pyeval.INVOKE_CUSTOM(instruction)
+            mock.assert_called_once_with(instruction)
+
+    def test_invoke_custom_range_with_valid_mnemonic(self, pyeval):
+        instruction = ["invoke-custom/range", "v4", "v9", "method"]
         with patch("quark.evaluator.pyeval.PyEval._invoke") as mock:
             pyeval.INVOKE_CUSTOM(instruction)
             mock.assert_called_once_with(instruction)
@@ -520,7 +593,7 @@ class TestPyEval:
         pyeval._move_result(instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1", expected_return_value, None, value_type=expected_return_type
+            expected_return_value, None, value_type=expected_return_type
         )
 
     # Tests for move_result
@@ -563,12 +636,10 @@ class TestPyEval:
         pyeval.NEW_INSTANCE(instruction)
 
         assert pyeval.table_obj.pop(3) == RegisterObject(
-            "v3",
             "Lcom/google/progress/SMSHelper;",
             value_type="Lcom/google/progress/SMSHelper;",
         )
         assert pyeval.table_obj.pop(4) == RegisterObject(
-            "v4",
             "Lcom/google/progress/SMSHelper;",
             value_type="Lcom/google/progress/SMSHelper;",
         )
@@ -576,7 +647,7 @@ class TestPyEval:
         pyeval.NEW_INSTANCE(override_original_instruction)
 
         assert pyeval.table_obj.pop(4) == RegisterObject(
-            "v4", "Ljava/lang/Object;", value_type="Ljava/lang/Object;"
+            "Ljava/lang/Object;", value_type="Ljava/lang/Object;"
         )
 
     # Tests for const_string
@@ -590,7 +661,6 @@ class TestPyEval:
         pyeval.CONST_STRING(instruction)
 
         assert pyeval.table_obj.pop(8) == RegisterObject(
-            "v8",
             "https://github.com/quark-engine/quark-engine",
             value_type="Ljava/lang/String;",
         )
@@ -605,7 +675,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(8) == RegisterObject(
-            "v8",
             "https://github.com/quark-engine/quark-engine",
             value_type="Ljava/lang/String;",
         )
@@ -620,7 +689,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(8) == RegisterObject(
-            "v8",
             "Landroid/telephony/SmsMessage;",
             value_type="Ljava/lang/Class;",
         )
@@ -668,10 +736,16 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "Lcom/google/progress/SMSHelper;",
             value_type="Lcom/google/progress/SMSHelper;",
         )
+
+    def test_move_object(self, pyeval):
+        instruction = ["move-object", "v1", "v4"]
+
+        pyeval.eval[instruction[0]](instruction)
+
+        assert id(pyeval.table_obj.pop(1)) == id(pyeval.table_obj.pop(4))
 
     def test_move_wide_kind(self, pyeval, move_wide_kind):
         instruction = [move_wide_kind, "v1", "v4"]
@@ -679,12 +753,11 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "Lcom/google/progress/SMSHelper;",
             value_type="Lcom/google/progress/SMSHelper;",
         )
         assert pyeval.table_obj.pop(2) == RegisterObject(
-            "v2", "some_number", value_type="I"
+            "some_number", value_type="I"
         )
 
     def test_new_array(self, pyeval):
@@ -693,7 +766,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "new-array()[(some_number)",
             value_type="[java/lang/String;",
         )
@@ -721,12 +793,11 @@ class TestPyEval:
     # Tests for aget-kind
     def test_aget_kind(self, pyeval, aget_kind):
         v2_mock_variable_obj = RegisterObject(
-            "v2",
             "some_list_like[1,2,3,4]",
             "java.io.file.close()",
             value_type="[Ljava/lang/Integer;",
         )
-        v3_mock_variable_obj = RegisterObject("v3", "2", None, value_type="I")
+        v3_mock_variable_obj = RegisterObject("2", None, value_type="I")
         pyeval.table_obj.insert(2, v2_mock_variable_obj)
         pyeval.table_obj.insert(3, v3_mock_variable_obj)
 
@@ -745,7 +816,7 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1", "some_list_like[1,2,3,4][2]", value_type=expected_value_type
+            "some_list_like[1,2,3,4][2]", value_type=expected_value_type
         )
 
     def test_aget_wide_kind(self, pyeval, aget_wide_kind):
@@ -754,7 +825,7 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1", "an_array[some_number]", value_type="I"
+            "an_array[some_number]", value_type="I"
         )
 
     # Tests for aput-kind
@@ -764,7 +835,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(6) == RegisterObject(
-            "v6",
             "an_array[some_number]:Lcom/google/progress/SMSHelper;",
             value_type="[I",
         )
@@ -775,7 +845,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(6) == RegisterObject(
-            "v6",
             (
                 "an_array[some_number]:"
                 "(Lcom/google/progress/SMSHelper;, some_number)"
@@ -790,7 +859,7 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1", "some_number", value_type="I"
+            "some_number", value_type="I"
         )
 
     def test_neg_and_not_wide_kind(self, pyeval, neg_not_wide_kind):
@@ -799,10 +868,10 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1", "some_number", value_type="I"
+            "some_number", value_type="I"
         )
         assert pyeval.table_obj.pop(2) == RegisterObject(
-            "v2", "an_array", value_type="[I"
+            "an_array", value_type="[I"
         )
 
     # Tests for type-casting
@@ -815,7 +884,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "casting(some_number)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -831,7 +899,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "casting(some_number, an_array)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -847,12 +914,10 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "casting(some_number)",
             value_type=pyeval.type_mapping[postfix],
         )
         assert pyeval.table_obj.pop(2) == RegisterObject(
-            "v2",
             "casting(some_number)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -867,7 +932,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "binop(some_number, an_array)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -881,12 +945,10 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "binop(Lcom/google/progress/SMSHelper;, an_array)",
             value_type=pyeval.type_mapping[postfix],
         )
         assert pyeval.table_obj.pop(2) == RegisterObject(
-            "v2",
             "binop(some_number, a_float)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -901,7 +963,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(4) == RegisterObject(
-            "v4",
             "binop(Lcom/google/progress/SMSHelper;, an_array)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -916,7 +977,6 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             "binop(some_number, literal_number)",
             value_type=pyeval.type_mapping[postfix],
         )
@@ -928,7 +988,7 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1", "Exception", value_type="Ljava/lang/Throwable;"
+            "Exception", value_type="Ljava/lang/Throwable;"
         )
 
     # Tests for fill-array-data
@@ -938,7 +998,7 @@ class TestPyEval:
         pyeval.eval[instruction[0]](instruction)
 
         assert pyeval.table_obj.pop(6) == RegisterObject(
-            "v6", "Embedded-array-data()[", value_type="[I"
+            "Embedded-array-data()[", value_type="[I"
         )
 
     def test_show_table(self, pyeval):
@@ -951,13 +1011,13 @@ class TestPyEval:
 
     def test_invoke_and_move(self, pyeval):
         v6_mock_variable_obj = RegisterObject(
-            "v6", "some_string", None, value_type="Ljava/lang/String;"
+            "some_string", None, value_type="Ljava/lang/String;"
         )
 
         pyeval.table_obj.insert(6, v6_mock_variable_obj)
 
         assert pyeval.table_obj.pop(6) == RegisterObject(
-            "v6", "some_string", value_type="Ljava/lang/String;"
+            "some_string", value_type="Ljava/lang/String;"
         )
 
         first_instruction = [
@@ -972,7 +1032,6 @@ class TestPyEval:
         pyeval.MOVE_RESULT_OBJECT(second_instruction)
 
         assert pyeval.table_obj.pop(1) == RegisterObject(
-            "v1",
             (
                 "Lcom/google/progress/ContactsCollector;"
                 "->getContactList()Ljava/lang/String;(some_string)"

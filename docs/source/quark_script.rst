@@ -100,6 +100,24 @@ checkMethodCalls(samplePath, targetMethod, checkMethods)
     3. checkMethods: python list contains the class name, method name, and descriptor of the target method
 - **return**: bool that indicates if the specific methods are called or defined within a target method or not
 
+findMethodImpls(samplePath, targetMethod)
+=========================================================
+
+- **Description**: Find all implementations of a specified method in the APK.
+- **params**:
+    1. samplePath: target file
+    2. targetMethod: python list contains the class name, method name, and descriptor of the target method
+- **return**: python list contains the method implementations of the target method
+
+isMethodReturnAlwaysTrue(samplePath, targetMethod)
+=========================================================
+
+- **Description**: Check if a method always returns True.
+- **params**:
+    1. samplePath: target file
+    2. targetMethod: python list contains the class name, method name, and descriptor of the target method
+- **return**: True/False
+
 Rule(rule.json)
 ===============
 
@@ -318,6 +336,19 @@ getApplication(samplePath)
 applicationInstance.isDebuggable(none)
 ======================================
 - **Description**: Check if the application element sets ``android:debuggable=true``.
+- **params**: none
+- **return**:  True/False
+
+getProviders(samplePath)
+==========================
+- **Description**: Get provider elements from the manifest file of the target sample.
+- **params**:
+    1. samplePath: the file path of target sample
+- **return**: python list containing provider elements
+
+providerInstance.isExported(none)
+==================================
+- **Description**: Check if the provider element set ``android:exported=true``.
 - **params**: none
 - **return**:  True/False
 
@@ -940,12 +971,19 @@ We use the `dvba.apk <https://github.com/rewanthtammana/Damn-Vulnerable-Bank>`_ 
 
 .. image:: https://imgur.com/KoOt5ii.jpg
 
-Quark Script: CWE-926.py
-========================
+CWE-926 Detection Process Using Quark Script API
+================================================
+
+.. image:: https://i.postimg.cc/Qtg97yD0/jie-tu-2025-10-30-wan-shang7-30-04.png
 
 Let's use the above APIs to show how the Quark script finds this vulnerability.
 
 First, we use Quark API ``getActivities(samplePath)`` to get all activity data in the manifest. Then, we use ``activityInstance.hasIntentFilter()`` to check if the activities have ``intent-filter``. Also, we use ``activityInstance.isExported()`` to check if the activities set the attribute ``android:exported=true``. If both are **true**, then the APK exports the component for use by other applications. That may cause CWE-926 vulnerabilities.
+
+Quark Script: CWE-926.py
+========================
+
+.. image:: https://i.postimg.cc/KcwSLv9L/jie-tu-2025-10-30-wan-shang7-32-01.png
 
 .. code-block:: python
 
@@ -1064,29 +1102,36 @@ Detect CWE-532 in Android Application
 This scenario seeks to find **insertion of sensitive information into Log file** in the APK file.
 
 CWE-532: Insertion of Sensitive Information into Log File
-=========================================================
+==========================================================
 
 We analyze the definition of CWE-532 and identify its characteristics.
 
 See `CWE-532 <https://cwe.mitre.org/data/definitions/532.html>`_ for more details.
 
-.. image:: https://imgur.com/I8sCUtM.jpg
+.. image:: https://imgur.com/6WzpyId.jpg
 
 Code of CWE-532 in dvba.apk
 ============================
 
 We use the `dvba.apk <https://github.com/rewanthtammana/Damn-Vulnerable-Bank>`_  sample to explain the vulnerability code of CWE-532.
 
-.. image:: https://imgur.com/THWm2gN.jpg
+.. image:: https://imgur.com/cLzBvh2.jpg
 
-Quark Script: CWE-532.py
-========================
+CWE-532 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://imgur.com/KLbnflF.jpg
 
 Let's use the above APIs to show how the Quark script finds this vulnerability.
 
 First, we use the API ``findMethodInAPK(samplePath, targetMethod)`` to locate ``log.d`` method. Then we use API ``methodInstance.getArguments()`` to get the argument that input to ``log.d``. Finally, we use some keywords such as "token", "password", and "decrypt" to check if arguments include sensitive data. If the answer is **YES**, that may cause sensitive data leakage into log file.
 
 You can use your own keywords in the keywords list to detect sensitive data.
+
+Quark Script: CWE-532.py
+=========================
+
+.. image:: https://imgur.com/L9Ciqlp.jpg
 
 .. code-block:: python
 
@@ -1111,16 +1156,16 @@ You can use your own keywords in the keywords list to detect sensitive data.
 
         for keyword in CREDENTIAL_KEYWORDS:
             if keyword in arguments[1]:
-                print(f"CWE-532 is detected in method, {debugLogger.fullName}") 
-
+                print(f"CWE-532 is detected in method, {debugLogger.fullName}")
 
 Quark Script Result
 ====================
 
 .. code-block:: TEXT
 
-    $ python CWE-532.py 
+    $ python CWE-532.py
     CWE-532 is detected in method, Lcom/google/firebase/auth/FirebaseAuth; d (Lc/c/b/h/o;)V
+
 
 
 Detect CWE-780 in Android Application
@@ -1144,12 +1189,19 @@ We use the `MSTG-Android-Java.apk <https://github.com/OWASP/MASTG-Hacking-Playgr
 
 .. image:: https://imgur.com/c03senv.png
 
-Quark Script: CWE-780.py
-========================
+CWE-780 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/x8zTSxpq/jie-tu-2025-11-14-shang-wu10-30-26.png
 
 Let’s use the above APIs to show how the Quark script finds this vulnerability.
 
 We first design a detection rule ``useOfCryptographicAlgo.json`` to spot on behavior using the cryptographic algorithm. Then, we use API ``behaviorInstance.hasString(pattern, isRegex)`` to filter behaviors using the RSA algorithm. Finally, we use the same API to check if the algorithm runs without the OAEP scheme. If the answer is YES, the plaintext is predictable.
+
+Quark Script: CWE-780.py
+=========================
+
+.. image:: https://i.postimg.cc/fTYxNZP6/jie-tu-2025-11-14-shang-wu10-31-55.png
 
 .. code-block:: python
 
@@ -2292,14 +2344,23 @@ We use the `InsecureBankv2.apk <https://github.com/dineshshetty/Android-Insecure
 
 .. image:: https://imgur.com/V7VtL3x.jpg
 
-Quark Script CWE-925.py
-========================
+
+CWE-925 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/Ls0Kw749/2025-09-17-4-19-22.png
 
 First, we use API ``getReceivers(samplePath)`` and ``receiverInstance.isExported()`` to find all the exported receivers defined in the APK.
 
-Second, we use API ``checkMethodCalls(samplePath, targetMethod, checkMethods)`` to check if the ``onReceive`` method of every exported receiver obtains intent action.
+Second, we use API ``checkMethodCalls(samplePath, targetMethod, checkMethods)`` to check if the ``onReceive`` method of every exported receiver obtains an intent action.
 
 If **No**, it could imply that the APK does not verify intent properly, potentially leading to a CWE-925 vulnerability.
+
+
+Quark Script CWE-925.py
+========================
+
+.. image:: https://i.postimg.cc/dQhts2gN/2025-09-17-4-17-51.png
 
 .. code-block:: python
 
@@ -2759,25 +2820,32 @@ We analyze the definition of CWE-502 and identify its characteristics.
 
 See `CWE-502 <https://cwe.mitre.org/data/definitions/502.html>`_ for more details.
 
-.. image:: https://imgur.com/Zee9kcJ.jpg
+.. image:: https://i.postimg.cc/YSyQsgGf/image.png
 
 Code of CWE-502 in pivaa.apk
 =============================
 
 We use the `pivaa.apk <https://github.com/htbridge/pivaa>`_ sample to explain the vulnerability code of CWE-502.
 
-.. image:: https://imgur.com/yZl5XS3.jpg
+.. image:: https://i.postimg.cc/XJdXkywv/image.png
 
-Quark Script CWE-502.py
-========================
+CWE-502 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/mkV97HsH/image.png
 
 Let’s use the above APIs to show how the Quark script finds this vulnerability.
 
 To begin with, we created a detection rule named ``deserializeData.json`` to identify behaviors that deserialize data.
 
-Next, we retrieve the methods that interact with the deserialization API. Following this, we check if there are any of the APIs in ``verificationApis`` are found.
+Next, we retrieve the methods that interact with the deserialization API. Following this, we check if the methods match any APIs for verifying data.
 
 If **NO**, it could imply that the APK deserializes the untrusted data, potentially leading to a CWE-502 vulnerability.
+
+Quark Script CWE-502.py
+========================
+
+.. image:: https://i.postimg.cc/vTmXSj7g/image.png
 
 .. code-block:: python
 
@@ -2785,28 +2853,28 @@ If **NO**, it could imply that the APK deserializes the untrusted data, potentia
 
     SAMPLE_PATH = "pivaa.apk"
     RULE_PATH = "deserializeData.json"
-        
+
     ruleInstance = Rule(RULE_PATH)
-        
+
     result = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
-    
+
     verificationApis = [
         ["Ljava/io/File;", "exists", "()Z"],
         ["Landroid/content/Context;", "getFilesDir", "()Ljava/io/File;"],
         ["Landroid/content/Context;", "getExternalFilesDir", "(Ljava/lang/String;)Ljava/io/File;"],
         ["Landroid/os/Environment;", "getExternalStorageDirectory", "()Ljava/io/File;"],
     ]
-        
+
     for dataDeserialization in result.behaviorOccurList:
         apis = dataDeserialization.getMethodsInArgs()
         caller = dataDeserialization.methodCaller
         if not any(api in apis for api in verificationApis):
             print(f"CWE-502 is detected in method, {caller.fullName}")
 
-
-
 Quark Rule: deserializeData.json
-==============================================
+=================================
+
+.. image:: https://i.postimg.cc/FsdDQm7r/image.png
 
 .. code-block:: json
 
@@ -2814,7 +2882,7 @@ Quark Rule: deserializeData.json
         "crime": "Deserialize Data",
         "permission": [],
         "api": [
-    
+
             {
                 "class": "Ljava/io/ObjectInputStream;",
                 "method": "<init>",
@@ -2824,21 +2892,21 @@ Quark Rule: deserializeData.json
                 "class": "Ljava/io/ObjectInputStream;",
                 "method": "readObject",
                 "descriptor": "()Ljava/lang/Object;"
-            }  
-    
+            }
+
         ],
         "score": 1,
         "label": []
     }
 
 Quark Script Result
-======================
-- **pivaa.apk**
+====================
 
 .. code-block:: TEXT
 
     $ python CWE-502.py
     CWE-502 is detected in method, Lcom/htbridge/pivaa/handlers/ObjectSerialization; loadObject ()V
+
 
 
 Detect CWE-601 in Android Application
@@ -2860,14 +2928,23 @@ Code of CWE-601 in ovaa.apk
 
 We use the `ovaa.apk <https://github.com/oversecured/ovaa>`_ sample to explain the vulnerability code of CWE-601.
 
-.. image:: https://imgur.com/I61pL2m.png
+.. image:: https://i.postimg.cc/hjqKnKLN/2025-10-08-1-12-43.png
 
-Quark Script: CWE-601.py
-========================
+
+CWE-601 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/q75yxptk/2025-10-09-9-14-34.png
 
 Let’s use the above APIs to show how the Quark script finds this vulnerability.
 
 To detect the vulnerability, we use the API ``findMethodInAPK(samplePath, targetMethod)`` to find all the caller methods of ``startActivity``. Next, we examine the arguments of each method to discover the methods receiving external input. If a method receives external input but lacks proper input validation, the CWE-601 vulnerability is identified.
+
+
+Quark Script: CWE-601.py
+========================
+
+.. image:: https://i.postimg.cc/wTwvm0Rm/2025-10-09-9-18-38.png
 
 .. code-block:: python
 
@@ -2919,3 +2996,740 @@ Quark Script Result
     $ python CWE-601.py
     CWE-601 is detected in Loversecured/ovaa/activities/DeeplinkActivity; processDeeplink (Landroid/net/Uri;)V
     CWE-601 is detected in Loversecured/ovaa/activities/LoginActivity; onLoginFinished ()V
+
+
+
+Detect CWE-329 in Android Application
+-------------------------------------
+
+This scenario seeks to find **Generation of Predictable IV with CBC Mode** in the APK file.
+
+CWE-329: Generation of Predictable IV with CBC Mode
+===================================================
+
+We analyze the definition of CWE-329 and identify its characteristics.
+
+See `CWE-329 <https://cwe.mitre.org/data/definitions/329.html>`_ for more details.
+
+
+.. image:: https://i.postimg.cc/ZY6WjB5z/Screenshot-2025-07-11-17-13-40.png
+   :target: https://i.postimg.cc/ZY6WjB5z/Screenshot-2025-07-11-17-13-40.png
+   :alt:
+
+
+Code of CWE-329 in InsecureBankv2.apk
+========================================
+
+We use the `InsecureBankv2.apk <https://github.com/dineshshetty/Android-InsecureBankv2>`_ sample to explain the vulnerability code of CWE-329.
+
+
+.. image:: https://i.postimg.cc/LXgBX9SB/Screenshot-2025-07-11-17-46-25.png
+   :target: https://i.postimg.cc/LXgBX9SB/Screenshot-2025-07-11-17-46-25.png
+   :alt:
+
+
+CWE-329 Detection Process Using Quark Script API
+================================================
+
+
+.. image:: https://i.postimg.cc/50cscyh2/Screenshot-2025-07-12-10-02-34.png
+   :target: https://i.postimg.cc/50cscyh2/Screenshot-2025-07-12-10-02-34.png
+   :alt:
+
+
+Let’s use the above APIs to show how the Quark script finds this vulnerability.
+
+To begin with, we created a detection rule named ``initializeCipherWithIV.json`` to identify behaviors that initialize a cipher object with IV. Then, we use API ``behaviorInstance.getParamValues()`` to check if the cipher object uses CBC mode.
+
+Finally, we use API ``behaviorInstance.isArgFromMethod(targetMethod)``  to check if any random API is applied on the IV used in the cipher object. If **NO**\ , it could imply that the APK uses a predictable IV in CBC mode cipher, potentially leading to a CWE-329 vulnerability.
+
+Quark Script CWE-329.py
+=======================
+
+
+.. image:: https://i.postimg.cc/prCCnZpm/Screenshot-2025-07-12-10-02-58.png
+   :target: https://i.postimg.cc/prCCnZpm/Screenshot-2025-07-12-10-02-58.png
+   :alt:
+
+
+.. code-block:: python
+
+   from quark.script import runQuarkAnalysis, Rule
+
+   SAMPLE_PATH = "InsecureBankv2.apk"
+   RULE_PATH = "initializeCipherWithIV.json"
+
+   randomAPIs = [
+       ["Ljava/security/SecureRandom", "next", "(I)I"],
+       ["Ljava/security/SecureRandom", "nextBytes", "([B)V"],
+   ]
+
+   ruleInstance = Rule(RULE_PATH)
+   quarkResult = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
+
+   for initCipherWithIV in quarkResult.behaviorOccurList:
+       methodcaller = initCipherWithIV.methodCaller
+       cipherName = initCipherWithIV.getParamValues()[0]
+
+       if "CBC" not in cipherName:
+           break
+
+       if not any(
+           initCipherWithIV.isArgFromMethod(api) for api in randomAPIs
+       ):
+           print(f"CWE-329 is detected in method, {methodcaller.fullName}")
+
+Quark Rule: initializeCipherWithIV.json
+=======================================
+
+
+.. image:: https://i.postimg.cc/Y9tM29YT/Screenshot-2025-07-11-17-49-41.png
+   :target: https://i.postimg.cc/Y9tM29YT/Screenshot-2025-07-11-17-49-41.png
+   :alt:
+
+
+.. code-block:: json
+
+   {
+       "crime": "Initialize a cipher object with IV",
+       "permission": [],
+       "api": [
+           {
+               "class": "Ljavax/crypto/spec/IvParameterSpec;",
+               "method": "<init>",
+               "descriptor": "([B)V"
+           },
+           {
+               "class": "Ljavax/crypto/Cipher;",
+               "method": "init",
+               "descriptor": "(ILjava/security/Key;Ljava/security/spec/AlgorithmParameterSpec;)V"
+           }
+       ],
+       "score": 1,
+       "label": []
+   }
+
+Quark Script Result
+===================
+
+.. code-block:: text
+
+   $ python CWE-329.py
+   CWE-329 is detected in method, Lcom/google/android/gms/internal/zzar; zzc ([B Ljava/lang/String;)[B
+   CWE-329 is detected in method, Lcom/android/insecurebankv2/CryptoClass; aes256encrypt ([B [B [B)[B
+   CWE-329 is detected in method, Lcom/android/insecurebankv2/CryptoClass; aes256decrypt ([B [B [B)[B
+
+
+
+
+Detect CWE-297 in Android Application
+--------------------------------------
+
+This scenario seeks to find **Improper Validation of Certificate with Host Mismatch**.
+
+CWE-297: Improper Validation of Certificate with Host Mismatch
+===============================================================
+
+We analyze the definition of CWE-297 and identify its characteristics.
+
+See `CWE-297 <https://cwe.mitre.org/data/definitions/297.html>`_ for more details.
+
+.. image:: https://i.postimg.cc/PrpC3vgy/image.png
+
+Code of CWE-297 in pivaa.apk
+=============================
+
+We use the `pivaa.apk <https://github.com/htbridge/pivaa>`_ sample to explain the vulnerability code of CWE-297.
+
+.. image:: https://i.postimg.cc/wT29kqv2/image.png
+
+CWE-297 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/ryYJRWGN/image.png
+
+First, we use API ``findMethodImpls(samplePath, targetMethod)`` to locate the method that implements the hostname verification, which verifies the hostname of a certificate.
+
+Next, we use API ``isMethodReturnAlwaysTrue(samplePath, targetMethod)`` to check if the method always returns true.
+
+If the answer is **YES**, the method does not check the certificate of the host properly, which may cause CWE-297 vulnerability.
+
+Quark Script CWE-297.py
+========================
+
+.. image:: https://i.postimg.cc/Dw311cSL/image.png
+
+.. code-block:: python
+
+    from quark.script import findMethodImpls, isMethodReturnAlwaysTrue
+
+    SAMPLE_PATH = "pivaa.apk"
+
+    ABSTRACT_METHOD = [
+        "Ljavax/net/ssl/HostnameVerifier;",
+        "verify",
+        "(Ljava/lang/String; Ljavax/net/ssl/SSLSession;)Z"
+    ]
+
+    for hostVerification in findMethodImpls(SAMPLE_PATH, ABSTRACT_METHOD):
+        methodImpls = [
+            hostVerification.className,
+            hostVerification.methodName,
+            hostVerification.descriptor
+        ]
+        if isMethodReturnAlwaysTrue(SAMPLE_PATH, methodImpls):
+            print(f"CWE-297 is detected in method, {hostVerification.fullName}")
+
+Quark Script Result
+====================
+
+.. code-block:: TEXT
+
+    $ python CWE-297.py
+    CWE-297 is detected in method, Lcom/htbridge/pivaa/handlers/API$1; verify (Ljava/lang/String; Ljavax/net/ssl/SSLSession;)Z
+
+
+
+Detect CWE-1204 in Android Application
+---------------------------------------
+
+This scenario seeks to find **Generation of Weak Initialization Vector (IV)**.
+
+CWE-1204: Generation of Weak Initialization Vector (IV)
+========================================================
+
+We analyze the definition of CWE-1204 and identify its characteristics.
+
+See `CWE-1204 <https://cwe.mitre.org/data/definitions/1204.html>`_ for more details.
+
+.. image:: https://i.postimg.cc/3NNmYz6J/image.png
+
+Code of CWE-1204 in InsecureBankv2.apk
+=======================================
+
+We use the `InsecureBankv2.apk <https://github.com/dineshshetty/Android-InsecureBankv2>`_ sample to explain the vulnerability code of CWE-1204.
+
+.. image:: https://i.postimg.cc/rsHWmQXG/image.png
+
+
+CWE-1204 Detection Process Using Quark Script API
+==================================================
+
+.. image:: https://i.postimg.cc/jq3yZdwW/image.png
+
+Let’s use the above APIs to show how the Quark script finds this vulnerability.
+
+First, we created a detection rule named ``initializeCipherWithIV.json`` to identify behaviors that initialize a cipher object with IV.
+
+Then, we use API ``behaviorInstance.isArgFromMethod(targetMethod)`` to check if any random API is applied on the IV used in the cipher object. If **NO**, it could imply that the APK uses a weak IV, potentially leading to a CWE-1204 vulnerability.
+
+Quark Scipt: CWE-1204.py
+=========================
+
+.. image:: https://i.postimg.cc/Hxs79fT4/image.png
+
+.. code-block:: python
+
+    from quark.script import runQuarkAnalysis, Rule
+
+    SAMPLE_PATH = "InsecureBankv2.apk"
+    RULE_PATH = "initializeCipherWithIV.json"
+
+    randomAPIs = [
+        ["Ljava/security/SecureRandom", "next", "(I)I"],
+        ["Ljava/security/SecureRandom", "nextBytes", "([B)V"],
+    ]
+
+    ruleInstance = Rule(RULE_PATH)
+    quarkResult = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
+
+    for initCipherWithIV in quarkResult.behaviorOccurList:
+        methodcaller = initCipherWithIV.methodCaller
+
+        if not any(
+            initCipherWithIV.isArgFromMethod(api) for api in randomAPIs
+        ):
+            print(f"CWE-1204 is detected in method, {methodcaller.fullName}")
+
+Quark Rule: initializeCipherWithIV.json
+========================================
+
+.. image:: https://i.postimg.cc/kGL69GKf/image.png
+
+.. code-block:: json
+
+    {
+        "crime": "Initialize a cipher object with IV",
+        "permission": [],
+        "api": [
+            {
+                "class": "Ljavax/crypto/spec/IvParameterSpec;",
+                "method": "<init>",
+                "descriptor": "([B)V"
+            },
+            {
+                "class": "Ljavax/crypto/Cipher;",
+                "method": "init",
+                "descriptor": "(ILjava/security/Key;Ljava/security/spec/AlgorithmParameterSpec;)V"
+            }
+        ],
+        "score": 1,
+        "label": []
+    }
+
+Quark Script Result
+====================
+
+.. code-block:: TEXT
+
+    $ python CWE-1204.py
+    CWE-1204 is detected in method, Lcom/android/insecurebankv2/CryptoClass; aes256encrypt ([B [B [B)[B
+    CWE-1204 is detected in method, Lcom/android/insecurebankv2/CryptoClass; aes256decrypt ([B [B [B)[B
+    CWE-1204 is detected in method, Lcom/google/android/gms/internal/zzar; zzc ([B Ljava/lang/String;)[B
+
+
+
+
+Detect CWE-24 in Android Application
+-------------------------------------
+
+This scenario aims to demonstrate the detection of the **Relative Path Traversal** vulnerability.
+
+CWE-24: Path Traversal: '../filedir'
+=====================================
+
+We analyze the definition of CWE-24 and identify its characteristics.
+
+See `CWE-24 <https://cwe.mitre.org/data/definitions/24.html>`_ for more details.
+
+.. image:: https://i.postimg.cc/xdQjd3M2/image.png
+
+Code of CWE-24 in ovaa.apk
+===========================
+
+We use the `ovaa.apk <https://github.com/oversecured/ovaa>`_ sample to explain the vulnerability code of CWE-24.
+
+.. image:: https://imgur.com/KT277GG.png
+
+CWE-24 Detection Process Using Quark Script API
+================================================
+
+.. image:: https://i.postimg.cc/YCz0YPp9/image.png
+
+Let’s use the above APIs to show how the Quark script finds this vulnerability.
+
+To begin with, we create a detection rule named ``accessFileInExternalDir.json`` to identify behavior that accesses a file in an external directory.
+
+Next, we use ``methodInstance.getArguments()`` to retrieve the file path argument and check whether it belongs to the APK. If it does not belong to the APK, the argument is likely from external input.
+
+Finally, we use the Quark Script API ``quarkResultInstance.findMethodInCaller(callerMethod, targetMethod)`` to search for any APIs in the caller method that are used to match strings, and ``getParamValues(none)`` to retrieve the parameters.
+
+If no API is found or ``"../"`` is not in parameters, that implies the APK does not neutralize the special element ``../`` within the argument, possibly resulting in CWE-24 vulnerability.
+
+Quark Script: CWE-24.py
+========================
+
+.. image:: https://i.postimg.cc/rwfc82VS/image.png
+
+.. code-block:: python
+
+    from quark.script import runQuarkAnalysis, Rule
+
+    SAMPLE_PATH = "ovaa.apk"
+    RULE_PATH = "accessFileInExternalDir.json"
+
+
+    STRING_MATCHING_API = [
+        ["Ljava/lang/String;", "contains", "(Ljava/lang/CharSequence)Z"],
+        ["Ljava/lang/String;", "indexOf", "(I)I"],
+        ["Ljava/lang/String;", "indexOf", "(Ljava/lang/String;)I"],
+        ["Ljava/lang/String;", "matches", "(Ljava/lang/String;)Z"],
+        [
+            "Ljava/lang/String;",
+            "replaceAll",
+            "(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;",
+        ],
+    ]
+
+    ruleInstance = Rule(RULE_PATH)
+    quarkResult = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
+
+    for accessExternalDir in quarkResult.behaviorOccurList:
+
+        filePath = accessExternalDir.secondAPI.getArguments()[2]
+
+        if quarkResult.isHardcoded(filePath):
+            continue
+
+        caller = accessExternalDir.methodCaller
+        strMatchingAPIs = [
+            api
+            for api in STRING_MATCHING_API
+            if quarkResult.findMethodInCaller(caller, api)
+        ]
+
+        if not strMatchingAPIs or "../" not in accessExternalDir.getParamValues():
+            print(f"CWE-24 is detected in method, {caller.fullName}")
+
+Quark Rule: accessFileInExternalDir.json
+=========================================
+
+.. image:: https://i.postimg.cc/1RDQ8qRR/image.png
+
+.. code-block:: json
+
+    {
+        "crime": "Access a file in an external directory",
+        "permission": [],
+        "api": [
+            {
+                "class": "Landroid/os/Environment;",
+                "method": "getExternalStorageDirectory",
+                "descriptor": "()Ljava/io/File;"
+            },
+            {
+                "class": "Ljava/io/File;",
+                "method": "<init>",
+                "descriptor": "(Ljava/io/File;Ljava/lang/String;)V"
+            }
+        ],
+        "score": 1,
+        "label": []
+    }
+
+Quark Script Result
+====================
+
+.. code-block:: TEXT
+
+    $ python3 CWE-24.py
+    CWE-24 is detected in method, Loversecured/ovaa/providers/TheftOverwriteProvider; openFile (Landroid/net/Uri; Ljava/lang/String;)Landroid/os/ParcelFileDescriptor;
+
+
+
+
+
+
+Detect CWE-359 in Android Application
+--------------------------------------
+
+This scenario aims to demonstrate the detection of the **Exposure of Private Personal Information to an Unauthorized Actor** vulnerability.
+
+CWE-359: Exposure of Private Personal Information to an Unauthorized Actor
+===========================================================================
+
+We analyze the definition of CWE-359 and identify its characteristics.
+
+See `CWE-359 <https://cwe.mitre.org/data/definitions/359.html>`_ for more details.
+
+.. image:: https://i.postimg.cc/QxZcD3gb/image.png
+
+Code of CWE-359 in ovaa.apk
+============================
+
+We use the `ovaa.apk <https://github.com/oversecured/ovaa>`_ sample to explain the vulnerability code of CWE-359.
+
+.. image:: https://i.postimg.cc/LhKL2vvC/image.png
+
+CWE-359 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/8CB6ywzN/image.png
+
+Let’s use the above APIs to show how the Quark script finds this vulnerability.
+
+To begin with, we create a detection rule named ``accessFileWithUnsafeUriPath.json`` to identify behavior that accesses a file with an unsafe path from ``Uri``.
+
+Next, we use API ``methodInstance.methodCaller`` to retrieve the name of the caller that has this behavior.
+
+Then, we use API ``quarkResultInstance.isHardcoded(argument)`` to check if the file path is hardcoded into the APK. If not, the file path is likely from external input.
+
+After that, we use API ``getProviders(samplePath)``  and ``providerInstance.isExported()`` to check if there is any exported provider that matches the caller class name. If yes, any external application can access the behavior.
+
+Finally, we use API ``quarkResultInstance.findMethodInCaller(callerMethod, targetMethod)`` to search for any APIs in the caller method that are used to match strings.
+
+If **NO** API is found, that implies the APK does not neutralize special elements within the argument, possibly resulting in a CWE-359 vulnerability.
+
+Quark Script: CWE-359.py
+=========================
+
+.. image:: https://i.postimg.cc/76KT46zR/image.png
+
+.. code-block:: python
+
+    from quark.script import Rule, runQuarkAnalysis, getProviders
+
+    SAMPLE_PATH = "ovaa.apk"
+    RULE_PATH = "accessFileWithUnsafeUriPath.json"
+
+    STRING_MATCHING_API = [
+        ["Ljava/lang/String;", "contains", "(Ljava/lang/CharSequence)Z"],
+        ["Ljava/lang/String;", "indexOf", "(I)I"],
+        ["Ljava/lang/String;", "indexOf", "(Ljava/lang/String;)I"],
+        ["Ljava/lang/String;", "matches", "(Ljava/lang/String;)Z"],
+        [
+            "Ljava/lang/String;",
+            "replaceAll",
+            "(Ljava/lang/String; Ljava/lang/String;)Ljava/lang/String;",
+        ],
+    ]
+
+    ruleInstance = Rule(RULE_PATH)
+    quarkResult = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
+
+    exportedProviders = [
+        str(provider)
+        for provider in getProviders(SAMPLE_PATH)
+        if provider.isExported()
+    ]
+
+    for behavior in quarkResult.behaviorOccurList:
+        caller = behavior.methodCaller
+        classNameInJavaFormat = caller.className.replace("/", ".")[1:-1]
+        filePath = behavior.secondAPI.getArguments()[2]
+
+        if quarkResult.isHardcoded(filePath):
+            continue
+
+        if classNameInJavaFormat not in exportedProviders:
+            continue
+
+        if not any(
+            quarkResult.findMethodInCaller(caller, api)
+            for api in STRING_MATCHING_API
+        ):
+            print(f"CWE-359 is detected in method, {caller.fullName}")
+
+Quark Rule: accessFileWithUnsafeUriPath.json
+=============================================
+
+.. image:: https://i.postimg.cc/kGDRgmFg/image.png
+
+.. code-block:: json
+
+    {
+        "crime": "Access a File with an unsafe path from Uri",
+        "permission": [],
+        "api": [
+            {
+                "class": "Landroid/net/Uri;",
+                "method": "getLastPathSegment",
+                "descriptor": "()Ljava/lang/String;"
+            },
+            {
+                "class": "Ljava/io/File;",
+                "method": "<init>",
+                "descriptor": "(Ljava/io/File;Ljava/lang/String;)V"
+            }
+        ],
+        "score": 1,
+        "label": []
+    }
+
+Quark Script Result
+====================
+
+.. code-block:: TEXT
+
+    $ python3 CWE-359.py
+    CWE-359 is detected in method, Loversecured/ovaa/providers/TheftOverwriteProvider; openFile (Landroid/net/Uri; Ljava/lang/String;)Landroid/os/ParcelFileDescriptor;
+
+
+
+
+Detect CWE-256 in Android Application
+--------------------------------------
+
+This scenario seeks to find **Plaintext Storage of a Password**.
+
+CWE-256: Plaintext Storage of a Password
+=========================================
+
+We analyze the definition of CWE-256 and identify its characteristics.
+
+See `CWE-256 <https://cwe.mitre.org/data/definitions/256.html>`_ for more details.
+
+.. image:: https://i.postimg.cc/rpydts5T/image.png
+
+Code of CWE-256 in ovaa.apk
+============================
+
+We use the `ovaa.apk <https://github.com/oversecured/ovaa>`_ sample to explain the vulnerability code of CWE-256.
+
+.. image:: https://i.postimg.cc/RhtqzHx7/image.png
+
+CWE-256 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://i.postimg.cc/X7PzpBFM/image.png
+
+First, we define a detection rule ``putStrAndCommit.json`` to identify behaviors that store information using ``SharedPreferences.Editor``.
+
+Next, we call ``behaviorInstance.getParamValues()`` to retrieve all parameter values associated with this behavior. We then check whether any parameter contains keywords that suggest it is being used as a password (e.g., ``password``, ``pswd``, or ``passwd``).
+
+Finally, we use ``behaviorInstance.isArgFromMethod(targetMethod)`` to verify whether the ``doFinal`` method for encryption is applied on the second argument ``value``. (Note: this Quark Script API checks all arguments, not just a specific one. Therefore, the API returns ``True`` even if the ``doFinal`` method is applied on the ``key`` argument rather than the ``value`` argument of ``putString`` . But the situation is so rare that we can neglect it.)
+
+If the answer is **NO**, it indicates that the value may be stored in plaintext, which could lead to a CWE-256 vulnerability.
+
+Quark Script CWE-256.py
+========================
+
+.. image:: https://i.postimg.cc/brxQ0JNR/image.png
+
+.. code-block:: python
+
+    from quark.script import runQuarkAnalysis, Rule
+
+    SAMPLE_PATH = "ovaa.apk"
+    RULE_PATH = "putStrAndCommit.json"
+
+    encryptAPI = ["Ljavax/crypto/Cipher;", "doFinal", ""]
+
+    passwordPatterns = ["password", "pswd", "passwd"]
+
+
+    ruleInstance = Rule(RULE_PATH)
+    quarkResult = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
+
+    for putStrAndCommit in quarkResult.behaviorOccurList:
+        paramValues = [
+            paramValue.lower() for paramValue in putStrAndCommit.getParamValues()
+        ]
+        if not any(
+            passwordPattern in paramValues for passwordPattern in passwordPatterns
+        ):
+            continue
+
+        if not putStrAndCommit.isArgFromMethod(encryptAPI):
+            print(
+                f"CWE-256 is detected in method",
+                putStrAndCommit.methodCaller.fullName
+            )
+
+Quark Rule: putStrAndCommit.json
+=================================
+
+.. image:: https://i.postimg.cc/h4sFPGpg/image.png
+
+.. code-block:: json
+
+    {
+        "crime": "Use editor to store information",
+        "permission": [],
+        "api": [
+            {
+                "class": "Landroid/content/SharedPreferences$Editor;",
+                "method": "putString",
+                "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;"
+            },
+            {
+                "class": "Landroid/content/SharedPreferences$Editor;",
+                "method": "commit",
+                "descriptor": "()Z"
+            }
+        ],
+        "score": 1,
+        "label": []
+    }
+
+Quark Script Result
+====================
+
+.. code-block:: TEXT
+
+    $ python3 CWE-256.py
+    CWE-256 is detected in method, Loversecured/ovaa/utils/LoginUtils; saveCredentials (Loversecured/ovaa/objects/LoginData;)V
+
+
+
+
+Detect CWE-927 in Android Application
+--------------------------------------
+
+This scenario seeks to find **Use of Implicit Intent for Sensitive Communication**.
+
+CWE-927: Use of Implicit Intent for Sensitive Communication
+===========================================================
+
+We analyze the definition of CWE-927 and identify its characteristics.
+
+See `CWE-927 <https://cwe.mitre.org/data/definitions/927.html>`_ for more details.
+
+.. image:: https://hackmd.io/_uploads/H1UYN6pqxe.png
+
+Code of CWE-927 in ovaa.apk
+============================
+
+We use the `ovaa.apk <https://github.com/oversecured/ovaa>`_ sample to explain the vulnerability code of CWE-927.
+
+.. image:: https://hackmd.io/_uploads/SJCe0Z1sll.png
+
+CWE-927 Detection Process Using Quark Script API
+=================================================
+
+.. image:: https://hackmd.io/_uploads/ByAqo4ksxg.png
+
+First, we design a detection rule ``startActivityWithIntent.json`` to identify the behavior of using an intent to start an activity.
+
+Then, we use the API ``behaviorInstance.getMethodsInArgs()`` to retrieve a list of methods that prepare an intent. 
+
+Finally, we check whether any component setting method is present in the list. If **none** is found, it indicates that the APK is using an implicit intent, which may lead to a CWE-927 vulnerability.
+
+Quark Script CWE-927.py
+========================
+
+.. image:: https://hackmd.io/_uploads/rkl2ii4ysex.png
+
+.. code-block:: python
+
+	from quark.script import runQuarkAnalysis, Rule
+	
+	SAMPLE_PATH = "ovaa.apk"
+	RULE_PATH = "startActivityWithIntent.json"
+	
+	ruleInstance = Rule(RULE_PATH)
+	quarkResult = runQuarkAnalysis(SAMPLE_PATH, ruleInstance)
+	
+	COMPONENT_SETTING_METHODS = ["setComponent", "setClass", "setClassName"]
+	
+	for intentUsage in quarkResult.behaviorOccurList:
+	    calledMethods = intentUsage.getMethodsInArgs()
+	
+	    if not any(
+	        method.methodName in COMPONENT_SETTING_METHODS for method in calledMethods
+	    ):
+	        print(f"CWE-927 is detected in method, {intentUsage.methodCaller.fullName}")
+
+
+Quark Rule: startActivityWithIntent.json
+========================================
+
+.. code-block:: json
+
+	{
+	    "crime": "Start Activity With Intent.",
+	    "permission": [],
+	    "api": [
+	        {
+	            "descriptor": "(Landroid/content/Context;Ljava/lang/Class;)V",
+	            "class": "Landroid/content/Intent;",
+	            "method": "<init>"
+	        },
+	        {
+	            "descriptor": "(Landroid/content/Intent;)V",
+	            "class": "",
+	            "method": "startActivity"
+	        }
+	    ],
+	    "score": 1,
+	    "label": []
+	}
+
+
+Quark Script Result
+====================
+
+.. code-block:: TEXT
+
+    $ python3 CWE-927.py
+    CWE-927 is detected in method, Loversecured/ovaa/activities/DeeplinkActivity; processDeeplink (Landroid/net/Uri;)V
