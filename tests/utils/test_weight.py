@@ -15,13 +15,13 @@ from quark.utils.weight import LEVEL_INFO, Weight
         (0, 0),
     ]
 )
-def score_weight_combination(request):
+def total_rule_score_and_apk_score(request):
     return request.param
 
 
 class TestWeight:
-    def test_init(self, expected_data):
-        score_sum, weight_sum = expected_data
+    def test_init(self, total_rule_score_and_apk_score):
+        score_sum, weight_sum = total_rule_score_and_apk_score
 
         weight_obj = Weight(score_sum, weight_sum)
 
@@ -36,8 +36,13 @@ class TestWeight:
         assert LEVEL_INFO.Moderate.value == "Moderate Risk"
         assert LEVEL_INFO.High.value == "High Risk"
 
+<<<<<<< HEAD
     def test_calculate(self, expected_data):
         score_sum, weight_sum = expected_data
+=======
+    def test_calculate(self, total_rule_score_and_apk_score):
+        score_sum, weight_sum = total_rule_score_and_apk_score
+>>>>>>> c57fa1dceca6fb0281b207ec864e77e097995db9
         weight_obj = Weight(score_sum, weight_sum)
 
         assert weight_obj.calculate() in [

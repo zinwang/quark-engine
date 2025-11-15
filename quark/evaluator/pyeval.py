@@ -42,13 +42,19 @@ class PyEval:
         self.eval = {
             # invoke-kind
             "invoke-virtual": self.INVOKE_VIRTUAL,
+            "invoke-virtual/range": self.INVOKE_VIRTUAL,
             "invoke-direct": self.INVOKE_DIRECT,
+            "invoke-direct/range": self.INVOKE_DIRECT,
             "invoke-static": self.INVOKE_STATIC,
-            "invoke-virtual/range": self.INVOKE_VIRTUAL_RANGE,
+            "invoke-static/range": self.INVOKE_STATIC,
             "invoke-interface": self.INVOKE_INTERFACE,
+            "invoke-interface/range": self.INVOKE_INTERFACE,
             "invoke-super": self.INVOKE_SUPER,
+            "invoke-super/range": self.INVOKE_SUPER,
             "invoke-polymorphic": self.INVOKE_POLYMORPHIC,
+            "invoke-polymorphic/range": self.INVOKE_POLYMORPHIC,
             "invoke-custom": self.INVOKE_CUSTOM,
+            "invoke-custom/range": self.INVOKE_CUSTOM,
             # move-result-kind
             "move-result": self.MOVE_RESULT,
             "move-result-wide": self.MOVE_RESULT_WIDE,
@@ -177,24 +183,31 @@ class PyEval:
                 var_obj = self.table_obj.pop(index)
                 value_of_reg_list.append(var_obj.value)
 
+        # Remove duplicate parameter values to save memory
+        seen = {}
+        for idx, val in enumerate(value_of_reg_list):
+            if val in seen:
+                value_of_reg_list[idx] = f"<ref_{seen[val]}>"
+            else:
+                seen[val] = idx
+
         invoked_state = f"{executed_fuc}({','.join(value_of_reg_list)})"
 
         # insert the function and the parameter into called_by_func
         for reg in reg_list:
             index = int(reg[1:])
-            obj_stack = self.table_obj.get_obj_list(index)
-            if obj_stack:
-                # add the function name into each parameter table
-                var_obj = self.table_obj.pop(index)
-                var_obj.called_by_func = invoked_state
 
-        if instruction[0].startswith('invoke') and not instruction[0].endswith("static"):
-            # push the return value into the instance
-            reg_idx_to_object = int(reg_list[0][1:])
+            if not self.table_obj.get_obj_list(index):
+                continue
 
-            obj_stack = self.table_obj.get_obj_list(reg_idx_to_object)
-            if obj_stack:
-                var_obj = self.table_obj.pop(reg_idx_to_object)
+            # add the function name into each parameter table
+            var_obj = self.table_obj.pop(index)
+            var_obj.called_by_func = invoked_state
+
+            if var_obj.bears_object():
+                # If the register bears an object, update its value to reflect
+                # the method invocation since the method may modify the
+                # internal state of the object.
                 var_obj.value = invoked_state
 
         if not executed_fuc.endswith(")V"):
@@ -210,12 +223,25 @@ class PyEval:
         index = int(reg[1:])
         try:
             pre_ret = self.ret_stack.pop()
-            variable_object = RegisterObject(reg, pre_ret, value_type=self.ret_type)
+            variable_object = RegisterObject(
+                value=pre_ret, value_type=self.ret_type
+            )
             self.table_obj.insert(index, variable_object)
             self.ret_type = ""
         except IndexError as e:
 
             log.exception(f"{e} in _move_result")
+
+    def _move_object(self, src_reg_idx: int, dest_reg_idx: int):
+        """
+        Move object from src_reg_idx to dest_reg_idx without creating new
+        RegisterObject. This allow both registers to point to the same object.
+        """
+        # Get the source object from the table
+        src_obj = self.table_obj.pop(src_reg_idx)
+
+        # Insert the source object to the destination register.
+        self.table_obj.insert(dest_reg_idx, src_obj)
 
     def _assign_value(self, instruction, value_type=""):
 
@@ -223,7 +249,7 @@ class PyEval:
         value = instruction[2]
         index = int(reg[1:])
 
-        variable_object = RegisterObject(reg, value, value_type=value_type)
+        variable_object = RegisterObject(value=value, value_type=value_type)
         self.table_obj.insert(index, variable_object)
 
     def _assign_value_wide(self, instruction, value_type=""):
@@ -233,10 +259,9 @@ class PyEval:
         reg = instruction[1]
         value = instruction[2]
         index = int(reg[1:])
-        reg_plus_one = f"v{index + 1}"
 
-        variable_object = RegisterObject(reg, value, value_type=value_type)
-        variable_object2 = RegisterObject(reg_plus_one, value, value_type=value_type)
+        variable_object = RegisterObject(value=value, value_type=value_type)
+        variable_object2 = RegisterObject(value=value, value_type=value_type)
         self.table_obj.insert(index, variable_object)
         self.table_obj.insert(index + 1, variable_object2)
 
@@ -244,6 +269,7 @@ class PyEval:
     def INVOKE_VIRTUAL(self, instruction):
         """
         invoke-virtual { parameters }, methodtocall
+        invoke-virtual/range { parameters }, methodtocall
 
         Invokes a virtual method with parameters.
         """
@@ -253,6 +279,7 @@ class PyEval:
     def INVOKE_DIRECT(self, instruction):
         """
         invoke-direct { parameters }, methodtocall
+        invoke-direct/range { parameters }, methodtocall
 
         Invokes a method with parameters without the virtual method resolution. (first parameter is "this")
         """
@@ -262,23 +289,18 @@ class PyEval:
     def INVOKE_STATIC(self, instruction):
         """
         invoke-static {parameters}, methodtocall
+        invoke-static/range {parameters}, methodtocall
 
         Invokes a static method with parameters.
         """
         self._invoke(instruction)
 
     @logger
-    def INVOKE_VIRTUAL_RANGE(self, instruction):
-        """
-        invoke-virtual/range { parameters }, methodtocall
-        Invokes a virtual-range method with parameters.
-        """
-        self._invoke(instruction, look_up=True)
-
-    @logger
     def INVOKE_INTERFACE(self, instruction):
         """
         invoke-interface { parameters }, methodtocall
+        invoke-interface/range { parameters }, methodtocall
+        
         Invokes a interface method with parameters.
         """
         self._invoke(instruction, look_up=True)
@@ -286,15 +308,29 @@ class PyEval:
     @logger
     def INVOKE_SUPER(self, instruction):
         """
-        invoke-interface { parameters }, methodtocall
-        Invokes a interface method with parameters.
+        invoke-super { parameters }, methodtocall
+        invoke-super/range { parameters }, methodtocall
+        
+        Invokes a super method with parameters.
         """
         self._invoke(instruction, look_up=True, skip_self=True)
 
     def INVOKE_POLYMORPHIC(self, instruction):
+        """
+        invoke-polymorphic { parameters }, methodtocall
+        invoke-polymorphic/range { parameters }, methodtocall
+        
+        Invokes a polymorphic method with parameters.
+        """
         self._invoke(instruction)
 
     def INVOKE_CUSTOM(self, instruction):
+        """
+        invoke-custom { parameters }, callsite
+        invoke-custom/range { parameters }, callsite
+        
+        Invokes a call site with parameters.
+        """
         self._invoke(instruction)
 
     @logger
@@ -320,9 +356,9 @@ class PyEval:
         index = int(reg[1:])
         try:
             pre_ret = self.ret_stack.pop()
-            variable_object = RegisterObject(reg, pre_ret, value_type=self.ret_type)
+            variable_object = RegisterObject(value=pre_ret, value_type=self.ret_type)
             variable_object2 = RegisterObject(
-                f"v{index + 1}", pre_ret, value_type=self.ret_type
+                value=pre_ret, value_type=self.ret_type
             )
             self.table_obj.insert(index, variable_object)
             self.table_obj.insert(index + 1, variable_object2)
@@ -488,6 +524,13 @@ class PyEval:
     @logger
     def MOVE_KIND(self, instruction):
         try:
+            if instruction[0].startswith("move-object"):
+                self._move_object(
+                    src_reg_idx=int(instruction[2][1:]),
+                    dest_reg_idx=int(instruction[1][1:]),
+                )
+                return
+
             wide = "wide" in instruction[0]
             self._move_value_to_register(instruction, "{src0}", wide=wide)
         except IndexError as e:
@@ -714,8 +757,7 @@ class PyEval:
                 value_dict["data"] = data
 
                 new_register = RegisterObject(
-                    f"v{source}",
-                    str_format.format(**value_dict),
+                    value=str_format.format(**value_dict),
                     value_type=value_type,
                 )
                 self.table_obj.insert(source, new_register)
@@ -765,8 +807,7 @@ class PyEval:
         value_dict["data"] = data
 
         new_register = RegisterObject(
-            f"v{destination}",
-            str_format.format(**value_dict),
+            value=str_format.format(**value_dict),
             value_type=value_type,
         )
 

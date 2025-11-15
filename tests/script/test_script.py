@@ -15,8 +15,11 @@ from quark.script import (
     getActivities,
     getReceivers,
     getApplication,
+    getProviders,
     runQuarkAnalysis,
     findMethodInAPK,
+    findMethodImpls,
+    isMethodReturnAlwaysTrue,
 )
 
 RULE_FOLDER_PATH = "tests/script/rules"
@@ -130,6 +133,16 @@ class TestReceiver:
         receiver = getReceivers(SAMPLE_PATH_13667)[0]
         assert receiver.isExported() is True
 
+class TestProvider:
+    @staticmethod
+    def testIsNotExported(SAMPLE_PATH_Vuldroid):
+        provider = getProviders(SAMPLE_PATH_Vuldroid)[0]
+        assert provider.isExported() is False
+
+    @staticmethod
+    def testIsExported(SAMPLE_PATH_pivaa):
+        provider = getProviders(SAMPLE_PATH_pivaa)[0]
+        assert provider.isExported() is True
 
 class TestMethod:
     @staticmethod
@@ -508,6 +521,26 @@ def testCheckMethodCalls(SAMPLE_PATH_14d9f) -> None:
         "(Ljava/lang/String; Ljava/lang/String;)I"
     ]))
 
-    assert checkMethodCalls("14d9f1a92dd984d6040cc41ed06e273e.apk", targetMethod, checkMethods) is True
+    assert checkMethodCalls(SAMPLE_PATH_14d9f, targetMethod, checkMethods) is True
 
 
+def testFindMethodImpls(SAMPLE_PATH_pivaa) -> None:
+    abstractMethod = [
+        "Ljavax/net/ssl/HostnameVerifier;",
+        "verify",
+        "(Ljava/lang/String; Ljavax/net/ssl/SSLSession;)Z"
+    ]
+    methodImpls = findMethodImpls(SAMPLE_PATH_pivaa, abstractMethod)
+    assert len(methodImpls) == 1
+    assert methodImpls[0].className == "Lcom/htbridge/pivaa/handlers/API$1;"
+    assert methodImpls[0].methodName == abstractMethod[1]
+    assert methodImpls[0].descriptor == abstractMethod[2]
+
+
+def testIsMethodReturnAlwaysTrue(SAMPLE_PATH_pivaa) -> None:
+    targetMethod = [
+        "Lcom/htbridge/pivaa/handlers/API$1;",
+        "verify",
+        "(Ljava/lang/String; Ljavax/net/ssl/SSLSession;)Z"
+    ]
+    assert isMethodReturnAlwaysTrue(SAMPLE_PATH_pivaa, targetMethod) is True
