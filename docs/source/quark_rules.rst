@@ -941,15 +941,15 @@ The table below lists the APKs we tested.
 New Quark Rules For SLocker
 ===============================
 
-New Quark rule (#246) is now available. This rule targets `SLocker <https://www.malwarebytes.com/blog/detections/android-ransom-slocker>`_\ , a malware family that locks the device with an overlaying screen. Check `here <https://github.com/ev-flow/quark-rules>`_ for the rule details.
+New Quark rule (#246) is now available. This rule targets `SLocker <https://www.malwarebytes.com/blog/detections/android-ransom-slocker>`_\ , a malware family that locks the device with an overlay screen. Check `here <https://github.com/ev-flow/quark-rules>`_ for the rule details.
 
 With this rule, Quark is now able to identify the SLocker malware family as high-risk. In our experiment, Quark achieved 100% accuracy and 100% precision. Please check :ref:`here <list-of-tested-apks-slocker>` for the APKs we tested.
 
 Below is a summary report of a SLocker sample (\ ``570e2811e8c87f714eb3485c271ec03b9de699c6b7f67e858a24396ce5f7b69e``\ ). The report shows that Quark identified the sample as high-risk, with a list of behaviors as evidence.
 
 
-.. image:: https://i.postimg.cc/2SRpWkbR/Screenshot-2025-11-25-00-46-31.png
-   :target: https://i.postimg.cc/2SRpWkbR/Screenshot-2025-11-25-00-46-31.png
+.. image:: https://i.postimg.cc/851cvgFy/Screenshot-2025-11-25-22-36-54.png
+   :target: https://i.postimg.cc/851cvgFy/Screenshot-2025-11-25-22-36-54.png
    :alt:
 
 
@@ -958,20 +958,20 @@ Identified Well-Known Threats
 
 With Quark's `rule classification <https://quark-engine.readthedocs.io/en/latest/quark_reports.html#rule-classification>`_ feature, analysts can generate behavior maps and see how behaviors are related. This feature helps identify 1 well-known threat from SLocker, as shown below.
 
-**1. Lock the device with an overlaying screen**
+**1. Lock the device with an overlay screen**
 
 
-.. image:: https://i.postimg.cc/brVmRTNM/blockscreen.png
-   :target: https://i.postimg.cc/brVmRTNM/blockscreen.png
+.. image:: https://i.postimg.cc/1zd7nsYP/blockscreen.png
+   :target: https://i.postimg.cc/1zd7nsYP/blockscreen.png
    :alt:
 
 
-The behavior map reveals that the ``Lcom/lololo/LockService;onCreate`` function creates an overlay window using the ``TYPE_PHONE`` window type and adds a view to it. The window type ``TYPE_PHONE`` allows the window to appear above all other applications. By configuring the window to occupy the full screen, the APK can block all user interactions with the device. Other window types, such as ``TYPE_SYSTEM_ALERT``\ , ``TYPE_SYSTEM_OVERLAY``\ , ``TYPE_SYSTEM_ERROR``\ , and ``TYPE_APPLICATION_OVERLAY``\ , are commonly used in malware as well.
+The behavior map reveals that the ``Lcom/lololo/LockService;onCreate`` function creates an overlay window on top of other applications. By configuring the window to occupy the full screen, the APK can block all user interactions with the device.
 
-Behaviors detected by Quark:
+The behavior detected by Quark:
 
 
-* Create a window above all applications and add a view to it (#00246)
+* Create an overlay window on top of other applications (#00246)
 
 .. _list-of-tested-apks-slocker:
 
