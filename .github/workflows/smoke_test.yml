@@ -56,9 +56,9 @@ jobs:
       uses: melusina-org/setup-macports@v1
       if: matrix.os == 'macos-latest'
 
-    - run: sudo apt-get -y install graphviz libzip
+    - run: sudo apt-get -y install graphviz
       if: matrix.os == 'ubuntu-latest'
-    - run: sudo port install graphviz
+    - run: sudo port install graphviz libzip
       if: matrix.os == 'macos-latest'
     - run: choco install graphviz
       if: matrix.os == 'windows-latest'
