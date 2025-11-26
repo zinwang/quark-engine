@@ -64,8 +64,7 @@ jobs:
       if: matrix.os == 'windows-latest'
 
     - run: |
-        brew install libzip
-        cd /usr/local/lib
+        echo $(ls /usr/local/lib)
         sudo ln -s libzip.dylib libzip.5.dylib
       if: matrix.os == 'macos-latest'
 
