@@ -65,7 +65,14 @@ jobs:
 
     - run: |
         sudo mkdir -p /usr/local/lib
-        sudo ln -s /opt/local/lib/libzip*.dylib /usr/local/lib/libzip.5.dylib
+        LIBZIP_FILE=$(ls /opt/local/lib/libzip.*.dylib 2>/dev/null | head -n 1)
+        if [ -n "$LIBZIP_FILE" ]; then
+          sudo ln -s "$LIBZIP_FILE" /usr/local/lib/libzip.5.dylib
+          echo "Created symlink: $LIBZIP_FILE -> /usr/local/lib/libzip.5.dylib"
+        else
+          echo "Error: libzip not found in /opt/local/lib/"
+          exit 1
+        fi
       if: matrix.os == 'macos-latest'
 
     - run: python -m pip install cython numpy versioneer pybind11 matplotlib lxml 
