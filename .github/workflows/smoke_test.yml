@@ -58,14 +58,15 @@ jobs:
 
     - run: sudo apt-get -y install graphviz
       if: matrix.os == 'ubuntu-latest'
-    - run: sudo port install graphviz
+    - run: sudo port install graphviz libzip
       if: matrix.os == 'macos-latest'
     - run: choco install graphviz
       if: matrix.os == 'windows-latest'
 
     - run: |
-        brew extract --version=5.4.0 libzip local/old-versions
-        brew install local/old-versions/libzip@5.4.0
+        sudo mkdir -p /usr/local/lib
+        LIBZIP_FILE=$(ls /opt/local/lib/libzip.*.dylib 2>/dev/null | head -n 1)
+        sudo ln -s "$LIBZIP_FILE" /usr/local/lib/libzip.5.dylib
       if: matrix.os == 'macos-latest'
 
     - run: python -m pip install cython numpy versioneer pybind11 matplotlib lxml 
