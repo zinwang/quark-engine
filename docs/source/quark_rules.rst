@@ -966,7 +966,7 @@ With Quark's `rule classification <https://quark-engine.readthedocs.io/en/latest
    :alt:
 
 
-The behavior map reveals that the ``Lcom/lololo/LockService;onCreate`` function creates an overlay window on top of other applications. By configuring the window to occupy the full screen, the APK can block all user interactions with the device.
+The behavior map reveals that the ``Lcom/lololo/LockService;onCreate`` function creates an overlay window on top of other applications. By configuring the window to occupy the entire screen, the APK can block all user interactions and lock the device.
 
 The behavior detected by Quark:
 
