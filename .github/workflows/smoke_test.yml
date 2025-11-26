@@ -64,6 +64,7 @@ jobs:
       if: matrix.os == 'windows-latest'
 
     - run: |
+        sudo mkdir -p /usr/local/lib
         sudo ln -s /opt/homebrew/lib/libshuriken.dylib /usr/local/lib/libzip.5.dylib
       if: matrix.os == 'macos-latest'
 
