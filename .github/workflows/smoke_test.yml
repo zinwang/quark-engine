@@ -64,8 +64,7 @@ jobs:
       if: matrix.os == 'windows-latest'
 
     - run: |
-        echo $(ls /usr/local/lib)
-        sudo ln -s libzip.dylib libzip.5.dylib
+        sudo ln -s /opt/homebrew/lib/libshuriken.dylib /usr/local/lib/libzip.5.dylib
       if: matrix.os == 'macos-latest'
 
     - run: python -m pip install cython numpy versioneer pybind11 matplotlib lxml 
