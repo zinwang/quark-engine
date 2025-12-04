@@ -1,3 +1,16 @@
+quark-engine (25.12.1-0kali1) kali-dev; urgency=medium
+
+  * Rule Enhancement
+
+    - Add 1 new rules for the SLocker malware family (#832)
+
+  * Document Enhancement
+
+    - Add an analysis report for the SLocker malware family. (#832)
+    - Optimize the document of Quark Script CWE-780 and CWE-940. (#829, #831)
+
+ --  Shaun Dang <pulorsok@gmail.com>  Wed, 03 Dec 2025 10:27:59 +0800
+
 quark-engine (25.11.1-0kali1) kali-dev; urgency=medium
 
   * Rule Enhancement
