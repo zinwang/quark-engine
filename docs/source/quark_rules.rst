@@ -936,3 +936,75 @@ The table below lists the APKs we tested.
      - b4bd13770c3514596dd36854850a9507e5734374083a0e4299c697b6c9b9ec58
    * - 10
      - d5ac8e081298e3b14b41f2134dae68535bcf740841e75f91754d3d0c0814ed42
+
+
+New Quark Rules For SLocker
+===============================
+
+New Quark rule (#246) is now available. This rule targets `SLocker <https://www.malwarebytes.com/blog/detections/android-ransom-slocker>`_\ , a malware family that locks the device with an overlay screen. Check `here <https://github.com/ev-flow/quark-rules>`_ for the rule details.
+
+With this rule, Quark is now able to identify the SLocker malware family as high-risk. In our experiment, Quark achieved 100% accuracy and 100% precision. Please check :ref:`here <list-of-tested-apks-slocker>` for the APKs we tested.
+
+Below is a summary report of a SLocker sample (\ ``570e2811e8c87f714eb3485c271ec03b9de699c6b7f67e858a24396ce5f7b69e``\ ). The report shows that Quark identified the sample as high-risk, with a list of behaviors as evidence.
+
+
+.. image:: https://i.postimg.cc/851cvgFy/Screenshot-2025-11-25-22-36-54.png
+   :target: https://i.postimg.cc/851cvgFy/Screenshot-2025-11-25-22-36-54.png
+   :alt:
+
+
+Identified Well-Known Threats
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With Quark's `rule classification <https://quark-engine.readthedocs.io/en/latest/quark_reports.html#rule-classification>`_ feature, analysts can generate behavior maps and see how behaviors are related. This feature helps identify 1 well-known threat from SLocker, as shown below.
+
+**1. Lock the device with an overlay screen**
+
+
+.. image:: https://i.postimg.cc/1zd7nsYP/blockscreen.png
+   :target: https://i.postimg.cc/1zd7nsYP/blockscreen.png
+   :alt:
+
+
+The behavior map reveals that the ``Lcom/lololo/LockService;onCreate`` function creates an overlay window on top of other applications. By configuring the window to occupy the entire screen, the APK can block all user interactions and lock the device.
+
+The behavior detected by Quark:
+
+
+* Create an overlay window on top of other applications (#00246)
+
+.. _list-of-tested-apks-slocker:
+
+List of Tested APKs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The table below lists the APKs we tested.
+
+.. list-table::
+   :header-rows: 1
+
+   * - index
+     - sha256
+   * - 1
+     - 35c39da84abfc8d8b89389524d6e203d91e5af8004720c60f13b492e14ddde56
+   * - 2
+     - 570e2811e8c87f714eb3485c271ec03b9de699c6b7f67e858a24396ce5f7b69e
+   * - 3
+     - 88b86662dd1653845985544299fd8cc732f49c72d63c86ea3ffb7bb3b3249138
+   * - 4
+     - 8ec195cd1f5c9f66c75000f26120832d7e1a9044fe3699d18d676bd5739b8518
+   * - 5
+     - 9cc9fba099c35d65638f521e5a1d748ea432b64d82fe9732cfc52f8b57d3dffd
+   * - 6
+     - 9e875f82515cc6b27367ae20ef52b9e0d7476bf8bda91e2ba0d888cf0857311f
+   * - 7
+     - a60082e481d6873103537e136b7b14a7892cd1205593d64567a448453eff4a6a
+   * - 8
+     - b5ab87692109c072cc277246e957ab32cfce6973f9f06c609ba51b53114cce51
+   * - 9
+     - df091031ed5073de09158b3afcf1fb956d1f337a66e552e9d3458ed5f5f6edb1
+   * - 10
+     - e504ff4501da2412758babadabb05a761ae6edacd043d68334e384d94fe4f4ac
+   * - 11
+     - f3fcd84b4e92a52ae5b30df003b911f21b2ea4325f788d5a5decc08582d3fd40
+
