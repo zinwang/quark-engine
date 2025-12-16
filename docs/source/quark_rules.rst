@@ -1060,7 +1060,7 @@ Behaviors detected by Quark:
 * Establish a connection to an NFC card (#00248)
 * Read the payment data stored in an NFC card (#00249)
 
-**3. Captures PIN of NFC cards through deceptive screens**
+**3. Captures PINs of NFC cards through deceptive screens**
 
 
 .. image:: https://i.postimg.cc/m2MP5bPq/ui.png
