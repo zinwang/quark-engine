@@ -1019,8 +1019,8 @@ With these rules, Quark is now able to identify the PhantomCard malware family a
 Below is a summary report of a PhantomCard sample (\ ``5769ae3cc93943dda4d1743f2febf6cec1282a0a6289da68cb55bb4724ec9332``\ ). The report shows that Quark identified the sample as high-risk, with a list of behaviors as evidence.
 
 
-.. image:: https://i.postimg.cc/NjWzDkrT/Screenshot-2025-12-16-15-58-58.png
-   :target: https://i.postimg.cc/NjWzDkrT/Screenshot-2025-12-16-15-58-58.png
+.. image:: https://i.postimg.cc/MTm5xxn2/Screenshot-2025-12-19-00-52-13.png
+   :target: https://i.postimg.cc/MTm5xxn2/Screenshot-2025-12-19-00-52-13.png
    :alt:
 
 
@@ -1063,18 +1063,18 @@ Behaviors detected by Quark:
 **3. Captures PINs of NFC cards through deceptive screens**
 
 
-.. image:: https://i.postimg.cc/m2MP5bPq/ui.png
-   :target: https://i.postimg.cc/m2MP5bPq/ui.png
+.. image:: https://i.postimg.cc/xT2QtP2Y/ui.png
+   :target: https://i.postimg.cc/xT2QtP2Y/ui.png
    :alt:
 
 
-The behavior map reveals that the ``Le/r;onReceive`` function creates a UI layout and sets a click listener to a UI element. If the UI layout is deceptive, users could be deceived into entering their NFC card PINs. Subsequently, the app could harvest the PINs via the click listeners on UI elements such as keypad buttons.
+The behavior map reveals that the ``Le/r;onReceive`` function creates a UI layout and sets a click listener to a UI element. If the UI layout is deceptive, users could be deceived into entering their NFC card PINs. Subsequently, the app could harvest the PINs by listening for user clicks on UI elements such as keypad buttons.
 
 Behaviors detected by Quark:
 
 
 * Create a UI layout from XML (#00250)
-* Set a click listener to a UI element (#00251)
+* Listen for user clicks on a UI element (#00251)
 
 .. _list-of-tested-apks-phantomcard:
 
