@@ -1068,7 +1068,7 @@ Behaviors detected by Quark:
    :alt:
 
 
-The behavior map reveals that the ``Le/r;onReceive`` function creates a UI layout and sets a click listener to a UI element. If the UI layout is deceptive, users could be deceived into entering their NFC card PINs. Subsequently, the app could harvest the PINs by listening for user clicks on UI elements such as keypad buttons.
+The behavior map reveals that the ``Le/r;onReceive`` function creates a UI layout and listens for user clicks on a UI element. If the UI layout is deceptive, users could be deceived into entering their NFC card PINs. Subsequently, the app could harvest the PINs by listening for user clicks on UI elements such as keypad buttons.
 
 Behaviors detected by Quark:
 
